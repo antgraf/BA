@@ -1,0 +1,8 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="WindowEntity\bin\Debug\WindowEntity.dll" />
+    <assembly path="ExecutionActors\bin\Debug\ExecutionActors.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto" />
+</NUnitProject>

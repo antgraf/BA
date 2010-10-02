@@ -1,0 +1,2 @@
+* Windows Input Simulator (C# SendInput Wrapper - Simulate Keyboard and Mouse) http://inputsimulator.codeplex.com/
+* XmlSerializableDictionary class is partially based on work of Aaron Skonnard (MSDN Magazine - June 2003) and Paul Welter (Paul Welter's Weblog)
