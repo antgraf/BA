@@ -220,6 +220,96 @@ namespace WindowEntity.Tests
 			Assert.Null(w);
 		}
 
+		[Test]
+		public void MinimizeMaximize()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			int width = w.Width;
+			int height = w.Height;
+			w.Maximize();
+			w.Wait(500);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreNotEqual(w.Width, width);
+			Assert.AreNotEqual(w.Height, height);
+			w.Normalize();
+			w.Wait(500);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreEqual(w.Width, width);
+			Assert.AreEqual(w.Height, height);
+			w.Minimize();
+			w.Wait(500);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreNotEqual(w.Width, width);
+			Assert.AreNotEqual(w.Height, height);
+			w.Normalize();
+			w.Wait(500);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreEqual(w.Width, width);
+			Assert.AreEqual(w.Height, height);
+			w.Wait(500);
+			w.Close();
+		}
+
+		[Test]
+		public void Move()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			w.Move(new Coordinate(CoordinateType.Absolute, new Point() { X = 0, Y = 0 }));
+			w.Wait(200);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreEqual(0, w.X);
+			Assert.AreEqual(0, w.Y);
+			w.Close();
+		}
+
+		[Test]
+		public void Resize()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			w.Resize(new Coordinate(CoordinateType.Absolute, new Point() { X = 500, Y = 500 }));
+			w.Wait(200);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.AreEqual(500, w.Width);
+			Assert.AreEqual(500, w.Height);
+			w.Close();
+		}
+
+		[Test]
+		public void Wheel()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			w.LeftClick(new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }));
+			w.WheelDown(10);
+			w.Wait(200);
+			w.WheelUp(5);
+			w.Wait(200);
+			w.Close();
+		}
+
 		[TearDown]
 		public void CleanUpOnError()
 		{

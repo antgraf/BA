@@ -208,7 +208,7 @@ namespace WindowsInput
 		/// </summary>
 		/// <param name="click">Click info</param>
 		/// <param name="mouseData">Additional data.</param>
-		public static void SimulateClick(MouseFlag click, uint mouseData)
+		public static void SimulateClick(MouseFlag click, int mouseData)
 		{
 			SimulateClick(click, mouseData, 0, 0);
 		}
@@ -231,7 +231,7 @@ namespace WindowsInput
 		/// <param name="mouseData">Additional data.</param>
 		/// <param name="x">X coordinate.</param>
 		/// <param name="y">Y coordinate.</param>
-		public static void SimulateClick(MouseFlag click, uint mouseData, int x, int y)
+		public static void SimulateClick(MouseFlag click, int mouseData, int x, int y)
 		{
 			var down = new INPUT();
 			down.Type = (UInt32)InputType.MOUSE;
@@ -266,7 +266,7 @@ namespace WindowsInput
 		/// <param name="clickDown">Click down info</param>
 		/// <param name="clickUp">Click up info</param>
 		/// <param name="mouseData">Additional data.</param>
-		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, uint mouseData)
+		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData)
 		{
 			SimulateClickPress(clickDown, clickUp, mouseData, 0, 0);
 		}
@@ -291,7 +291,7 @@ namespace WindowsInput
 		/// <param name="mouseData">Additional data.</param>
 		/// <param name="x">X coordinate.</param>
 		/// <param name="y">Y coordinate.</param>
-		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, uint mouseData, int x, int y)
+		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData, int x, int y)
 		{
 			var down = new INPUT();
 			down.Type = (UInt32)InputType.MOUSE;

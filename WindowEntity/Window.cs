@@ -83,6 +83,7 @@ namespace WindowEntity
 		private const int MaxTitleLength = 512;
 		private const int DefaultTimerDeviationPercent = 15;
 		private const int DefaultTimerKeyWait = 100;
+		private const int WHEEL_DELTA = 120;
 
 		private static Random pRandom = new Random();
 
@@ -217,6 +218,42 @@ namespace WindowEntity
 			KeySend("%{F4}");
 		}
 
+		public virtual void Move(Coordinate position)
+		{
+			Point pt = position.ToAbsolute(Desktop.Primary);
+			WinAPI.SetWindowPos(Handle.Handle, IntPtr.Zero, pt.X, pt.Y, 0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER);
+		}
+
+		public virtual void Resize(Coordinate rightBottom)
+		{
+			Point pt = rightBottom.ToAbsolute(Desktop.Primary);
+			WinAPI.SetWindowPos(Handle.Handle, IntPtr.Zero, 0, 0, pt.X, pt.Y, WinAPI.SWP_NOMOVE | WinAPI.SWP_NOZORDER);
+		}
+
+		public virtual void Minimize()
+		{
+			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
+			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			wp.ShowCmd = ShowWindowCommand.Minimize;
+			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+		}
+
+		public virtual void Maximize()
+		{
+			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
+			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			wp.ShowCmd = ShowWindowCommand.Maximize;
+			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+		}
+
+		public virtual void Normalize()
+		{
+			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
+			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			wp.ShowCmd = ShowWindowCommand.Normal;
+			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+		}
+
 		#endregion
 
 		#region MouseMethods
@@ -306,32 +343,32 @@ namespace WindowEntity
 				}
 				case MouseActions.X1Click:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 0, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X1Down:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 0, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X1Up:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 0, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X2Click:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 1, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 2, x, y);
 					break;
 				}
 				case MouseActions.X2Down:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 1, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 2, x, y);
 					break;
 				}
 				case MouseActions.X2Up:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 1, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 2, x, y);
 					break;
 				}
 				default:
@@ -368,6 +405,16 @@ namespace WindowEntity
 			Click(MouseActions.LeftClick, point);
 			WaitRandom(100);
 			Click(MouseActions.LeftClick, point);
+		}
+
+		public virtual void WheelUp(int ticks)
+		{
+			InputSimulator.SimulateClick(MouseFlag.WHEEL, ticks * WHEEL_DELTA);
+		}
+
+		public virtual void WheelDown(int ticks)
+		{
+			InputSimulator.SimulateClick(MouseFlag.WHEEL, ticks * -WHEEL_DELTA);
 		}
 
 #endregion
