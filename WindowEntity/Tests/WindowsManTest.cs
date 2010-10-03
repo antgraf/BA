@@ -18,6 +18,8 @@ namespace WindowEntity.Tests
 		[Test]
 		public void Registration()
 		{
+			WindowsMan.ResetWindows();
+			Assert.AreEqual(0, WindowsMan.RegisteredWindows.Length);
 			Window w1 = new Window();
 			w1.Handle = new WindowHandle() { Handle = new IntPtr(2222) };
 			Assert.NotNull(w1);
@@ -33,14 +35,14 @@ namespace WindowEntity.Tests
 			Assert.False(WindowsMan.RegisterWindow(w1));
 			Assert.True(WindowsMan.RegisterWindow(w2));
 			Assert.False(WindowsMan.RegisterWindow(w2));
-			Assert.AreEqual(WindowsMan.RegisteredWindows.Length, 2);
+			Assert.AreEqual(2, WindowsMan.RegisteredWindows.Length);
 			Assert.True(WindowsMan.UnRegisterWindow(w1));
 			Assert.False(WindowsMan.UnRegisterWindow(w1));
-			Assert.AreEqual(WindowsMan.RegisteredWindows.Length, 1);
-			Assert.AreEqual(WindowsMan.RegisteredWindows[0].Title, "BEFORE");
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			Assert.AreEqual("BEFORE", WindowsMan.RegisteredWindows[0].Title);
 			Assert.True(WindowsMan.ModifyWindow(w3));
-			Assert.AreEqual(WindowsMan.RegisteredWindows.Length, 1);
-			Assert.AreEqual(WindowsMan.RegisteredWindows[0].Title, "AFTER");
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			Assert.AreEqual("AFTER", WindowsMan.RegisteredWindows[0].Title);
 		}
 
 		[Test]

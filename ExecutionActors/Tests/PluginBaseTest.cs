@@ -11,6 +11,7 @@ namespace ExecutionActors.Tests
 		public TestPlugin()
 		{
 			pAbsoluteSettingsFolder = @"C:\Temp";
+			pActor = new TestActor();
 		}
 
 		public override void ShowUI()
@@ -51,7 +52,9 @@ namespace ExecutionActors.Tests
 		[Test]
 		public void Run()
 		{
-			throw new NotImplementedException();
+			PluginBase pb = new TestPlugin();
+			Assert.NotNull(pb);
+			pb.Run();
 		}
 	}
 }

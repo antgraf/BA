@@ -149,6 +149,16 @@ namespace WindowEntity
 			}
 		}
 
+		public static void ResetWindows()
+		{
+			pRegisteredWindows.Clear();
+		}
+
+		public static Process RunProcess(string path)
+		{
+			return Process.Start(path);
+		}
+
 		public static Window[] RegisteredWindows
 		{
 			get
@@ -158,11 +168,6 @@ namespace WindowEntity
 					return pRegisteredWindows.ToArray();
 				}
 			}
-		}
-
-		public static Process RunProcess(string path)
-		{
-			return Process.Start(path);
 		}
 	}
 }

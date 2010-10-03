@@ -7,6 +7,6 @@ namespace WindowEntity.Tests
 {
 	internal class Definitions
 	{
-		internal const string PathToSampleApp = @"..\..\..\SampleWindow\bin\Debug\SampleWindow.exe";
+		internal const string PathToSampleApp = @"SampleWindow.exe";
 	}
 }

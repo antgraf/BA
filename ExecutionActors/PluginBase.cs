@@ -50,6 +50,11 @@ namespace ExecutionActors
 			return filename;
 		}
 
+		public void Run()
+		{
+			pActor.Run();
+		}
+
 		public void SaveSettings()
 		{
 			string xml = pSettings.XmlSerialize();
