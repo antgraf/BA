@@ -9,12 +9,16 @@ namespace ExecutionActors
 	{
 		private static List<Actor> pActors = new List<Actor>();
 
-		public static Actor NewActor(Type type, object data)
+		public static Actor NewActor(Type type, IActorObserver observer)
+		{
+			return NewActor(type, null, observer);
+		}
+
+		public static Actor NewActor(Type type, object data, IActorObserver observer)
 		{
 			Actor actor = (Actor)Activator.CreateInstance(type);
-			actor.Init(data);
+			actor.Init(data, observer);
 			pActors.Add(actor);
-			actor.Run();
 			return actor;
 		}
 

@@ -114,6 +114,7 @@
 			this.txtboxOutput.Location = new System.Drawing.Point(0, 24);
 			this.txtboxOutput.Multiline = true;
 			this.txtboxOutput.Name = "txtboxOutput";
+			this.txtboxOutput.ReadOnly = true;
 			this.txtboxOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.txtboxOutput.Size = new System.Drawing.Size(292, 227);
 			this.txtboxOutput.TabIndex = 2;

@@ -11,7 +11,7 @@ using BACommon;
 
 namespace BA
 {
-	public partial class MainForm : Form, IObserver
+	public partial class MainForm : Form, IPluginObserver
 	{
 		private const string pMsgFormatFull = "[{0}] {1} ({2}%): {3}\r\n";
 		private const string pMsgFormatPercent = "[{0}] {1} ({2}%)\r\n";
@@ -40,6 +40,7 @@ namespace BA
 				{
 					foreach(PluginBase plugin in plugins)
 					{
+						plugin.Init(this);
 						PluginMenuItem menu = new PluginMenuItem(plugin, this);
 						mnuitemPlugins.DropDownItems.Add(menu);
 					}
@@ -51,24 +52,34 @@ namespace BA
 			}
 		}
 
-		#region IObserver Members
+		#region IPluginObserver Members
 
 		public void Notify(PluginBase module, string stage, int percentage, string message)
 		{
-			string msg = string.Format(pMsgFormatFull, module, stage, percentage, message);
-			txtboxOutput.Text += msg;
+			Invoke(new MethodInvoker(delegate(){
+				string msg = string.Format(pMsgFormatFull, module, stage, percentage, message);
+				txtboxOutput.Text += msg;
+				lblStatus.Text = stage;
+			}));
 		}
 
 		public void Notify(PluginBase module, string stage, int percentage)
 		{
-			string msg = string.Format(pMsgFormatFull, module, stage, percentage);
-			txtboxOutput.Text += msg;
+			Invoke(new MethodInvoker(delegate()
+			{
+				string msg = string.Format(pMsgFormatFull, module, stage, percentage);
+				txtboxOutput.Text += msg;
+				lblStatus.Text = stage;
+			}));
 		}
 
 		public void Notify(PluginBase module, string message)
 		{
-			string msg = string.Format(pMsgFormatFull, module, message);
-			txtboxOutput.Text += msg;
+			Invoke(new MethodInvoker(delegate()
+			{
+				string msg = string.Format(pMsgFormatFull, module, message);
+				txtboxOutput.Text += msg;
+			}));
 		}
 
 		#endregion

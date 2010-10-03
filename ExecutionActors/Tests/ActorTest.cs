@@ -9,8 +9,10 @@ namespace ExecutionActors.Tests
 	internal class TestActor : Actor
 	{
 		protected override void Worker()
-		{
-		}
+		{}
+
+		protected override void Init(object data)
+		{}
 	}
 
 	[TestFixture]

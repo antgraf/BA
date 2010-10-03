@@ -20,9 +20,15 @@ namespace ExecutionActors
 		protected Thread pThread = null;
 		protected ActorStatus pStatus = ActorStatus.Idle;
 		protected Exception pUnhandledException = null;
+		protected IActorObserver pObserver = null;
 
-		public virtual void Init(object data)
-		{}
+		public virtual void Init(object data, IActorObserver observer)
+		{
+			pObserver = observer;
+			Init(data);
+		}
+
+		protected abstract void Init(object data);
 
 		public virtual void Run()
 		{

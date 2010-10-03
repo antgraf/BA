@@ -10,9 +10,9 @@ namespace BA
 	public class PluginMenuItem : ToolStripMenuItem
 	{
 		private PluginBase pPlugin = null;
-		private IObserver pObserver = null;
+		private IPluginObserver pObserver = null;
 
-		public PluginMenuItem(PluginBase plugin, IObserver observer)
+		public PluginMenuItem(PluginBase plugin, IPluginObserver observer)
 		{
 			pPlugin = plugin;
 			pObserver = observer;

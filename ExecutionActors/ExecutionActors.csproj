@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Include="Actor.cs" />
     <Compile Include="ActorsMan.cs" />
+    <Compile Include="IActorObserver.cs" />
+    <Compile Include="IPluginObserver.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginsMan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

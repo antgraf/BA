@@ -204,6 +204,22 @@ namespace WindowEntity.Tests
 			Assert.Null(w);
 		}
 
+		[Test]
+		public void Close()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(1, WindowsMan.RegisteredWindows.Length);
+			w.Close();
+			Window.WaitGlobal(100);
+			w = WindowsMan.UpdateWindow(w);
+			Assert.Null(w);
+		}
+
 		[TearDown]
 		public void CleanUpOnError()
 		{

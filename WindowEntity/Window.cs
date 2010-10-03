@@ -212,6 +212,11 @@ namespace WindowEntity
 			Wait(msec);
 		}
 
+		public virtual void Close()
+		{
+			KeySend("%{F4}");
+		}
+
 		#endregion
 
 		#region MouseMethods
@@ -368,6 +373,18 @@ namespace WindowEntity
 #endregion
 
 		#region KeyboardMethods
+
+		public virtual void WinKeyDown()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyDown(VirtualKeyCode.LWIN);
+		}
+
+		public virtual void WinKeyUp()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyUp(VirtualKeyCode.LWIN);
+		}
 
 		public virtual void KeySend(string keys)
 		{

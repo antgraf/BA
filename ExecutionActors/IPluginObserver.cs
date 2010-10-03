@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using ExecutionActors;
 
-namespace BA
+namespace ExecutionActors
 {
-	public interface IObserver
+	public interface IPluginObserver
 	{
 		void Notify(PluginBase module, string stage, int percentage, string message);
 		void Notify(PluginBase module, string stage, int percentage);

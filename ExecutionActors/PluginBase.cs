@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ExecutionActors
 {
-	public abstract class PluginBase
+	public abstract class PluginBase : IActorObserver
 	{
 		private const string pSettingsFileExtension = ".xml";
 
@@ -16,6 +16,7 @@ namespace ExecutionActors
 		protected string pAbsoluteSettingsFolder = null;
 		protected string pRelativeSettingsFolder = null;
 		protected Actor pActor = null;
+		protected IPluginObserver pObserver = null;
 
 		private string GetDefaultSettingsName()
 		{
@@ -50,6 +51,11 @@ namespace ExecutionActors
 			return filename;
 		}
 
+		public void Init(IPluginObserver observer)
+		{
+			pObserver = observer;
+		}
+
 		public void Run()
 		{
 			pActor.Run();
@@ -76,6 +82,34 @@ namespace ExecutionActors
 		}
 
 		public abstract void ShowUI();
+
+		#region IActorObserver Members
+
+		public void Notify(Actor actor, string stage, int percentage, string message)
+		{
+			if(pObserver != null)
+			{
+				pObserver.Notify(this, stage, percentage, message);
+			}
+		}
+
+		public void Notify(Actor actor, string stage, int percentage)
+		{
+			if(pObserver != null)
+			{
+				pObserver.Notify(this, stage, percentage);
+			}
+		}
+
+		public void Notify(Actor actor, string message)
+		{
+			if(pObserver != null)
+			{
+				pObserver.Notify(this, message);
+			}
+		}
+
+		#endregion
 
 		public string Name
 		{
