@@ -56,9 +56,29 @@ namespace ExecutionActors
 			pObserver = observer;
 		}
 
-		public void Run()
+		public virtual void Run()
 		{
 			pActor.Run();
+		}
+
+		public virtual void Pause()
+		{
+			pActor.Pause();
+		}
+
+		public virtual void Continue()
+		{
+			pActor.Continue();
+		}
+
+		public virtual void Exit()
+		{
+			pActor.Exit();
+		}
+
+		public virtual void GoToFinalState()
+		{
+			pActor.GoToFinalState();
 		}
 
 		public void SaveSettings()

@@ -1,2 +1,3 @@
 * Windows Input Simulator (C# SendInput Wrapper - Simulate Keyboard and Mouse) http://inputsimulator.codeplex.com/
 * XmlSerializableDictionary class is partially based on work of Aaron Skonnard (MSDN Magazine - June 2003) and Paul Welter (Paul Welter's Weblog)
+* SuspendableThread - Peter Ritchie's MVP Blog (http://msmvps.com/blogs/peterritchie/archive/2006/10/13/_2700_System.Threading.Thread.Suspend_280029002700_-is-obsolete_3A00_-_2700_Thread.Suspend-has-been-deprecated_2E00__2E00__2E00_.aspx)
