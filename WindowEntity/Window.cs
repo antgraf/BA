@@ -6,6 +6,8 @@ using System.Diagnostics;
 using WindowsInput;
 using System.Windows.Forms;
 using System.Threading;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace WindowEntity
 {
@@ -87,6 +89,8 @@ namespace WindowEntity
 
 		private static Random pRandom = new Random();
 
+		private double pAllowedColorDeviation = 0.0;
+		private double pAllowedImageDeviation = 0.0;
 		private double pTimeMultiplier = 1.0;
 		private int pWidth = -1;
 		private int pHeight = -1;
@@ -115,6 +119,37 @@ namespace WindowEntity
 				Wait(100);
 			}
 			return needed;
+		}
+
+		public bool CompareColors(Color color1, Color color2)
+		{
+			if(pAllowedColorDeviation == 0.0)
+			{
+				return color1.ToArgb() == color2.ToArgb();
+			}
+
+			int diffr = Math.Abs((int)color1.R - (int)color2.R);
+			int diffg = Math.Abs((int)color1.G - (int)color2.G);
+			int diffb = Math.Abs((int)color1.B - (int)color2.B);
+			double diff = Math.Sqrt(diffr * diffr + diffg * diffg + diffb * diffb) / Math.Sqrt(255 * 255 * 3);
+			return diff <= pAllowedColorDeviation;
+		}
+
+		protected double Radius(Coordinate center, Coordinate radiusPoint)
+		{
+			Point centerpt = center.ToAbsolute(this);
+			Point radiuspt = radiusPoint.ToAbsolute(this);
+			int diffx = centerpt.X - radiuspt.X;
+			int diffy = centerpt.Y - radiuspt.Y;
+			return Math.Sqrt(diffx * diffx + diffy * diffy);
+		}
+
+		protected bool IsInRadius(Point point, Point center, double radius)
+		{
+			int diffx = center.X - point.X;
+			int diffy = center.Y - point.Y;
+			double distance = Math.Sqrt(diffx * diffx + diffy * diffy);
+			return distance <= radius;
 		}
 
 		public static Window[] FindWindowsByProcessName(string process)
@@ -453,6 +488,239 @@ namespace WindowEntity
 
 		#endregion
 
+		#region FeedbackMethods
+
+		public Color GetPixelColor(Coordinate pixel)
+		{
+			ActivateIfNeeded();
+			Point pt = pixel.ToAbsolute(this);
+			IntPtr hdc = WinAPI.GetDC(IntPtr.Zero);
+			uint colorint = WinAPI.GetPixel(hdc, pt.X, pt.Y);
+			WinAPI.ReleaseDC(IntPtr.Zero, hdc);
+			Color color = Color.FromArgb((int)(colorint & 0x000000FF),
+				(int)(colorint & 0x0000FF00) >> 8,
+				(int)(colorint & 0x00FF0000) >> 16);
+			return color;
+		}
+
+		public Bitmap Screenshot()
+		{
+			return Screenshot(new Coordinate(CoordinateType.Relative, new Point() { X = 0, Y = 0 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = Width, Y = Height }));
+		}
+
+		public Bitmap Screenshot(Coordinate topLeft, Coordinate bottomRight)
+		{
+			ActivateIfNeeded();
+			Point pt1 = topLeft.ToAbsolute(this);
+			Point pt2 = bottomRight.ToAbsolute(this);
+			Bitmap screenshot = new Bitmap(pt2.X - pt1.X, pt2.Y - pt1.Y, PixelFormat.Format32bppArgb);
+			using(Graphics gdi = Graphics.FromImage(screenshot))
+			{
+				gdi.CopyFromScreen(pt1.X, pt1.Y, 0, 0, new Size(pt2.X - pt1.X, pt2.Y - pt1.Y), CopyPixelOperation.SourceCopy);
+			}
+			return screenshot;
+		}
+
+		public Coordinate FindColor(Color color)
+		{
+			return FindColorInRectangle(color,
+				new Coordinate(CoordinateType.Relative, new Point() { X = 0, Y = 0 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = Width, Y = Height }));
+		}
+
+		public Coordinate FindColorInRectangle(Color color, Coordinate topLeft, Coordinate bottomRight)
+		{
+			ActivateIfNeeded();
+			Bitmap bmp = Screenshot(topLeft, bottomRight);
+			for(int y = 0; y < bmp.Height; y++)
+				for(int x = 0; x < bmp.Width; x++)
+				{
+					if(CompareColors(color, bmp.GetPixel(x, y)))
+					{
+						Point origin = topLeft.ToAbsolute(this);
+						return new Coordinate(CoordinateType.Absolute, new Point()
+							{ X = origin.X + x, Y = origin.Y + y });
+					}
+				}
+			return null;
+		}
+
+		public Coordinate FindColorInCircle(Color color, Coordinate center, Coordinate radiusPoint)
+		{
+			ActivateIfNeeded();
+
+			Point centerpt = center.ToAbsolute(this);
+			Point radiuspt = radiusPoint.ToAbsolute(this);
+			int diffx = centerpt.X - radiuspt.X;
+			int diffy = centerpt.Y - radiuspt.Y;
+			double radius = Radius(center, radiusPoint);
+			int left = (int)(centerpt.X - radius);
+			left = left < 0 ? 0 : left;
+			int top = (int)(centerpt.Y - radius);
+			top = top < 0 ? 0 : top;
+			int right = (int)(centerpt.X + radius);
+			right = right >= Width ? Width - 1 : right;
+			int bottom = (int)(centerpt.Y + radius);
+			bottom = bottom >= Height ? Height - 1 : bottom;
+
+			Bitmap bmp = Screenshot(
+				new Coordinate(CoordinateType.Absolute, new Point() { X = left, Y = top }),
+				new Coordinate(CoordinateType.Absolute, new Point() { X = right, Y = bottom }));
+			for(int y = 0; y < bmp.Height; y++)
+				for(int x = 0; x < bmp.Width; x++)
+				{
+					if(CompareColors(color, bmp.GetPixel(x, y)))
+					{
+						if(IsInRadius(new Point() { X = x + left, Y = y + top }, centerpt, radius))
+						{
+							return new Coordinate(CoordinateType.Absolute, new Point() { X = left + x, Y = top + y });
+						}
+					}
+				}
+			return null;
+		}
+
+		public bool CompareImagesExactly(Bitmap baseline, Bitmap image)
+		{
+			return CompareImagesExactly(baseline, image, null);
+		}
+
+		protected bool CompareImagesExactly(Bitmap baseline, Bitmap image, Point? fragment)
+		{
+			if((fragment == null && (baseline.Size.Width != image.Size.Width || baseline.Size.Height != image.Size.Height)) ||
+				(fragment != null && (baseline.Size.Width < image.Size.Width + fragment.Value.X ||
+					baseline.Size.Height < image.Size.Height + fragment.Value.Y)))
+			{
+				return false;
+			}
+			int startx = fragment == null ? 0 : fragment.Value.X;
+			int starty = fragment == null ? 0 : fragment.Value.Y;
+			int i = 0; //debug
+			for(int y = 0; y < image.Height; y++)
+				for(int x = 0; x < image.Width; x++)
+				{
+					i++; // debug
+					if(baseline.GetPixel(x + startx, y + starty).ToArgb() != image.GetPixel(x, y).ToArgb())
+					{
+						return false;
+					}
+				}
+			return true;
+		}
+
+		public bool CompareImagesWithColorDeviation(Bitmap baseline, Bitmap image)
+		{
+			return CompareImagesWithColorDeviation(baseline, image, null);
+		}
+
+		protected bool CompareImagesWithColorDeviation(Bitmap baseline, Bitmap image, Point? fragment)
+		{
+			if((fragment == null && (baseline.Size.Width != image.Size.Width || baseline.Size.Height != image.Size.Height)) ||
+				(fragment != null && (baseline.Size.Width < image.Size.Width + fragment.Value.X ||
+					baseline.Size.Height < image.Size.Height + fragment.Value.Y)))
+			{
+				return false;
+			}
+			int startx = fragment == null ? 0 : fragment.Value.X;
+			int starty = fragment == null ? 0 : fragment.Value.Y;
+			for(int y = 0; y < image.Height; y++)
+				for(int x = 0; x < image.Width; x++)
+				{
+					if(!CompareColors(baseline.GetPixel(x + startx, y + starty), image.GetPixel(x, y)))
+					{
+						return false;
+					}
+				}
+			return true;
+		}
+
+		public bool CompareImages(Bitmap baseline, Bitmap image)
+		{
+			return CompareImages(baseline, image, null);
+		}
+
+		protected bool CompareImages(Bitmap baseline, Bitmap image, Point? fragment)
+		{
+			if((fragment == null && (baseline.Size.Width != image.Size.Width || baseline.Size.Height != image.Size.Height)) ||
+				(fragment != null && (baseline.Size.Width < image.Size.Width + fragment.Value.X ||
+					baseline.Size.Height < image.Size.Height + fragment.Value.Y)))
+			{
+				return false;
+			}
+			int startx = fragment == null ? 0 : fragment.Value.X;
+			int starty = fragment == null ? 0 : fragment.Value.Y;
+			int diff = 0;
+			for(int y = 0; y < image.Height; y++)
+				for(int x = 0; x < image.Width; x++)
+				{
+					if(baseline.GetPixel(x + startx, y + starty).ToArgb() != image.GetPixel(x, y).ToArgb())
+					{
+						if(((double)++diff) / (baseline.Size.Width * baseline.Size.Height) > pAllowedImageDeviation)
+						{
+							return false;
+						}
+					}
+				}
+			return true;
+		}
+
+		public Coordinate FindImageExactly(Bitmap image, Bitmap fragment)
+		{
+			if(fragment.Size.Width > image.Size.Width || fragment.Size.Height > image.Size.Height)
+			{
+				return null;
+			}
+			for(int y = 0; y < image.Height - fragment.Height; y++)
+				for(int x = 0; x < image.Width - fragment.Width; x++)
+				{
+					Point pt = new Point() { X = x, Y = y };
+					if(CompareImagesExactly(image, fragment, pt))
+					{
+						return new Coordinate(CoordinateType.Relative, pt);
+					}
+				}
+			return null;
+		}
+
+		public Coordinate FindImageWithColorDeviation(Bitmap image, Bitmap fragment)
+		{
+			if(fragment.Size.Width > image.Size.Width || fragment.Size.Height > image.Size.Height)
+			{
+				return null;
+			}
+			for(int y = 0; y < image.Height - fragment.Height; y++)
+				for(int x = 0; x < image.Width - fragment.Width; x++)
+				{
+					Point pt = new Point() { X = x, Y = y };
+					if(CompareImagesWithColorDeviation(image, fragment, pt))
+					{
+						return new Coordinate(CoordinateType.Relative, pt);
+					}
+				}
+			return null;
+		}
+
+		public Coordinate FindImage(Bitmap image, Bitmap fragment)
+		{
+			if(fragment.Size.Width > image.Size.Width || fragment.Size.Height > image.Size.Height)
+			{
+				return null;
+			}
+			for(int y = 0; y < image.Height - fragment.Height; y++)
+				for(int x = 0; x < image.Width - fragment.Width; x++)
+				{
+					Point pt = new Point() { X = x, Y = y };
+					if(CompareImages(image, fragment, pt))
+					{
+						return new Coordinate(CoordinateType.Relative, pt);
+					}
+				}
+			return null;
+		}
+
+		#endregion
+
 		#region Properties
 
 		public virtual double TimeMultiplier
@@ -495,6 +763,18 @@ namespace WindowEntity
 		{
 			get { return pHandle; }
 			set { pHandle = value; }
+		}
+
+		public double AllowedColorDeviation
+		{
+			get { return pAllowedColorDeviation; }
+			set { pAllowedColorDeviation = value; }
+		}
+
+		public double AllowedImageDeviation
+		{
+			get { return pAllowedImageDeviation; }
+			set { pAllowedImageDeviation = value; }
 		}
 
 		#endregion;

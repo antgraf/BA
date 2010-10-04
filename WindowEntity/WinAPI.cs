@@ -412,7 +412,7 @@ namespace WindowEntity
 		}
 	}
 
-	internal class WinAPI
+	internal sealed class WinAPI
 	{
 
 		internal static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
@@ -484,5 +484,14 @@ namespace WindowEntity
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool GetWindowPlacement(IntPtr hWnd, out WINDOWPLACEMENT lpwndpl);
+
+		[DllImport("user32.dll")]
+		internal static extern IntPtr GetDC(IntPtr hwnd);
+
+		[DllImport("user32.dll")]
+		internal static extern Int32 ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
+		[DllImport("gdi32.dll")]
+		internal static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
 	}
 }

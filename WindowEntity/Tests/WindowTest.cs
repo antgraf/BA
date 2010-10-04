@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using System.Diagnostics;
+using System.Drawing;
+using BACommon;
+using System.Drawing.Imaging;
 
 namespace WindowEntity.Tests
 {
 	[TestFixture]
 	public class WindowTest
 	{
+		private const string pTempDirectory = @"C:\Temp";
 		private List<Process> pProcessesToClean = new List<Process>();
 
 		[Test]
@@ -307,6 +311,209 @@ namespace WindowEntity.Tests
 			w.Wait(200);
 			w.WheelUp(5);
 			w.Wait(200);
+			w.Close();
+		}
+
+		[Test]
+		public void GetPixelColor()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Assert.AreEqual(Color.Red.ToArgb(), w.GetPixelColor(new Coordinate(CoordinateType.Relative, new Point() { X = 100, Y = 200 })).ToArgb());
+			w.Close();
+		}
+
+		[Test]
+		public void Screenshot()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			//bmp.Save(FileUtils.CombineWinPath(pTempDirectory, FileUtils.MakeValidFileName(DateTime.Now.ToString()) + ".png"), ImageFormat.Png);
+			w.Close();
+		}
+
+		[Test]
+		public void FindColor()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Coordinate coord = w.FindColor(Color.Red);
+			Point pt = coord.ToRelative(w);
+			Assert.AreEqual(97, pt.X);
+			Assert.AreEqual(197, pt.Y);
+			w.Close();
+		}
+
+		[Test]
+		public void FindColorInRectangle()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Coordinate coord = w.FindColorInRectangle(Color.Red,
+				new Coordinate(CoordinateType.Relative, new Point() { X = 50, Y = 50 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 250, Y = 250 }));
+			Point pt = coord.ToRelative(w);
+			Assert.AreEqual(97, pt.X);
+			Assert.AreEqual(197, pt.Y);
+			w.Close();
+		}
+
+		[Test]
+		public void FindColorInCircle()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Coordinate coord = w.FindColorInCircle(Color.Red,
+				new Coordinate(CoordinateType.Relative, new Point() { X = 100, Y = 200 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 110, Y = 200 }));
+			Point pt = coord.ToRelative(w);
+			Assert.AreEqual(97, pt.X);
+			Assert.AreEqual(197, pt.Y);
+			// no red pixels
+			coord = w.FindColorInCircle(Color.Red,
+				new Coordinate(CoordinateType.Relative, new Point() { X = 130, Y = 200 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 110, Y = 200 }));
+			Assert.Null(coord);
+			w.Close();
+		}
+
+		[Test]
+		public void CompareImagesExactly()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Assert.True(w.CompareImagesExactly(bmp, bmp));
+			Bitmap newbmp = new Bitmap(bmp);
+			Assert.NotNull(newbmp);
+			newbmp.SetPixel(0, 0, Color.Magenta);
+			Assert.False(w.CompareImagesExactly(bmp, newbmp));
+			w.Close();
+		}
+
+		[Test]
+		public void CompareImagesWithColorDeviation()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Assert.True(w.CompareImagesWithColorDeviation(bmp, bmp));
+			w.Close();
+		}
+
+		[Test]
+		public void CompareImages()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Assert.True(w.CompareImages(bmp, bmp));
+			w.Close();
+		}
+
+		[Test]
+		public void FindImageExactly()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Bitmap fragment = w.Screenshot(
+				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
+			Assert.NotNull(fragment);
+			Coordinate found = w.FindImageExactly(bmp, fragment);
+			Assert.NotNull(found);
+			Point pt = found.ToRelative(w);
+			Assert.AreEqual(300, pt.X);
+			Assert.AreEqual(300, pt.Y);
+			w.Close();
+		}
+
+		[Test]
+		public void FindImageWithColorDeviation()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Bitmap fragment = w.Screenshot(
+				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
+			Assert.NotNull(fragment);
+			Coordinate found = w.FindImageWithColorDeviation(bmp, fragment);
+			Assert.NotNull(found);
+			Point pt = found.ToRelative(w);
+			Assert.AreEqual(300, pt.X);
+			Assert.AreEqual(300, pt.Y);
+			w.Close();
+		}
+
+		[Test]
+		public void FindImage()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			Bitmap bmp = w.Screenshot();
+			Assert.NotNull(bmp);
+			Bitmap fragment = w.Screenshot(
+				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
+			Assert.NotNull(fragment);
+			Coordinate found = w.FindImage(bmp, fragment);
+			Assert.NotNull(found);
+			Point pt = found.ToRelative(w);
+			Assert.AreEqual(300, pt.X);
+			Assert.AreEqual(300, pt.Y);
 			w.Close();
 		}
 
