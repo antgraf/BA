@@ -48,6 +48,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="tessnet2_64, Version=2.0.4.0, Culture=neutral, PublicKeyToken=1550524b5ba07e29, processorArchitecture=AMD64">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coordinate.cs" />
@@ -73,10 +76,16 @@
     <ProjectReference Include="..\Common\BACommon.csproj">
       <Project>{4BE5E530-CFE9-4B8A-A16A-66E95C177A3F}</Project>
       <Name>BACommon</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\InputSimulator\InputSimulator.csproj">
       <Project>{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}</Project>
       <Name>InputSimulator</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TessNet2\TessNet2.csproj">
+      <Project>{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}</Project>
+      <Name>TessNet2</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

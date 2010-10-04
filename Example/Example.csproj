@@ -65,10 +65,12 @@
     <ProjectReference Include="..\ExecutionActors\ExecutionActors.csproj">
       <Project>{9BECF6F2-38C4-4DBD-A02E-50E03649A42C}</Project>
       <Name>ExecutionActors</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WindowEntity\WindowEntity.csproj">
       <Project>{EF9C5E85-679B-4767-ACB2-D81B38026DDA}</Project>
       <Name>WindowEntity</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

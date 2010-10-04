@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using BACommon;
 using System.Drawing.Imaging;
+using Tesseract;
 
 namespace WindowEntity.Tests
 {
@@ -14,6 +15,7 @@ namespace WindowEntity.Tests
 	public class WindowTest
 	{
 		private const string pTempDirectory = @"C:\Temp";
+		private const string pTestImagePath = @"..\TessNet2\test\text.png";
 		private List<Process> pProcessesToClean = new List<Process>();
 
 		[Test]
@@ -515,6 +517,24 @@ namespace WindowEntity.Tests
 			Assert.AreEqual(300, pt.X);
 			Assert.AreEqual(300, pt.Y);
 			w.Close();
+		}
+
+		[Test]
+		public void Tesseract()
+		{
+			Ocr ocr = new Ocr();
+			Assert.NotNull(ocr);
+			using(Bitmap bmp = new Bitmap(pTestImagePath))
+			{
+				Assert.NotNull(bmp);
+				tessnet2.Tesseract tessocr = new tessnet2.Tesseract();
+				Assert.NotNull(tessocr);
+				tessocr.Init(null, "eng", false);
+				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save(FileUtils.CombineWinPath(pTempDirectory, Guid.NewGuid().ToString()) + ".bmp");
+				ocr.DoOCRMultiThred(bmp, "eng");
+				List<tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
+				Assert.NotNull(words);
+			}
 		}
 
 		[TearDown]

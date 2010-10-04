@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BA", "BA\BA.csproj", "{4CDB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{3AE87DF4-D05D-4E1A-98C7-AAD1B6E1ED67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TessNet2", "TessNet2\TessNet2.csproj", "{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{3AE87DF4-D05D-4E1A-98C7-AAD1B6E1ED67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AE87DF4-D05D-4E1A-98C7-AAD1B6E1ED67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AE87DF4-D05D-4E1A-98C7-AAD1B6E1ED67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
