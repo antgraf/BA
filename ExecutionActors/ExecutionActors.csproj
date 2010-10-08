@@ -51,7 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actor.cs" />
-    <Compile Include="ActorsMan.cs" />
+    <Compile Include="ActorsMan.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="IActorObserver.cs" />
     <Compile Include="IPluginObserver.cs" />
     <Compile Include="PluginBase.cs" />

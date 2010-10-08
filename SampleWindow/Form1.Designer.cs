@@ -35,6 +35,7 @@
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.button3 = new System.Windows.Forms.Button();
 			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -97,11 +98,22 @@
 			this.textBox2.TabIndex = 5;
 			this.textBox2.Text = resources.GetString("textBox2.Text");
 			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label2.Location = new System.Drawing.Point(350, 100);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(77, 18);
+			this.label2.TabIndex = 6;
+			this.label2.Text = "Large text";
+			// 
 			// SampleForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(640, 480);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.textBox2);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.textBox1);
@@ -124,6 +136,7 @@
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button button3;
 		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.Label label2;
 	}
 }
 

@@ -338,9 +338,11 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			//bmp.Save(FileUtils.CombineWinPath(pTempDirectory, FileUtils.MakeValidFileName(DateTime.Now.ToString()) + ".png"), ImageFormat.Png);
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				//bmp.Save(FileUtils.CombineWinPath(pTempDirectory, FileUtils.MakeValidFileName(DateTime.Now.ToString()) + ".png"), ImageFormat.Png);
+			}
 			w.Close();
 		}
 
@@ -410,13 +412,17 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Assert.True(w.CompareImagesExactly(bmp, bmp));
-			Bitmap newbmp = new Bitmap(bmp);
-			Assert.NotNull(newbmp);
-			newbmp.SetPixel(0, 0, Color.Magenta);
-			Assert.False(w.CompareImagesExactly(bmp, newbmp));
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				Assert.True(w.CompareImagesExactly(bmp, bmp));
+				using(Bitmap newbmp = new Bitmap(bmp))
+				{
+					Assert.NotNull(newbmp);
+					newbmp.SetPixel(0, 0, Color.Magenta);
+					Assert.False(w.CompareImagesExactly(bmp, newbmp));
+				}
+			}
 			w.Close();
 		}
 
@@ -429,9 +435,11 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Assert.True(w.CompareImagesWithColorDeviation(bmp, bmp));
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				Assert.True(w.CompareImagesWithColorDeviation(bmp, bmp));
+			}
 			w.Close();
 		}
 
@@ -444,9 +452,11 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Assert.True(w.CompareImages(bmp, bmp));
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				Assert.True(w.CompareImages(bmp, bmp));
+			}
 			w.Close();
 		}
 
@@ -459,17 +469,21 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Bitmap fragment = w.Screenshot(
-				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
-				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
-			Assert.NotNull(fragment);
-			Coordinate found = w.FindImageExactly(bmp, fragment);
-			Assert.NotNull(found);
-			Point pt = found.ToRelative(w);
-			Assert.AreEqual(300, pt.X);
-			Assert.AreEqual(300, pt.Y);
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				using(Bitmap fragment = w.Screenshot(
+					new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+					new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 })))
+				{
+					Assert.NotNull(fragment);
+					Coordinate found = w.FindImageExactly(bmp, fragment);
+					Assert.NotNull(found);
+					Point pt = found.ToRelative(w);
+					Assert.AreEqual(300, pt.X);
+					Assert.AreEqual(300, pt.Y);
+				}
+			}
 			w.Close();
 		}
 
@@ -482,17 +496,21 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Bitmap fragment = w.Screenshot(
-				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
-				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
-			Assert.NotNull(fragment);
-			Coordinate found = w.FindImageWithColorDeviation(bmp, fragment);
-			Assert.NotNull(found);
-			Point pt = found.ToRelative(w);
-			Assert.AreEqual(300, pt.X);
-			Assert.AreEqual(300, pt.Y);
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				using(Bitmap fragment = w.Screenshot(
+					new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+					new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 })))
+				{
+					Assert.NotNull(fragment);
+					Coordinate found = w.FindImageWithColorDeviation(bmp, fragment);
+					Assert.NotNull(found);
+					Point pt = found.ToRelative(w);
+					Assert.AreEqual(300, pt.X);
+					Assert.AreEqual(300, pt.Y);
+				}
+			}
 			w.Close();
 		}
 
@@ -505,17 +523,21 @@ namespace WindowEntity.Tests
 			pProcessesToClean.Add(p);
 			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
 			Assert.NotNull(w);
-			Bitmap bmp = w.Screenshot();
-			Assert.NotNull(bmp);
-			Bitmap fragment = w.Screenshot(
-				new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
-				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 }));
-			Assert.NotNull(fragment);
-			Coordinate found = w.FindImage(bmp, fragment);
-			Assert.NotNull(found);
-			Point pt = found.ToRelative(w);
-			Assert.AreEqual(300, pt.X);
-			Assert.AreEqual(300, pt.Y);
+			using(Bitmap bmp = w.Screenshot())
+			{
+				Assert.NotNull(bmp);
+				using(Bitmap fragment = w.Screenshot(
+					new Coordinate(CoordinateType.Relative, new Point() { X = 300, Y = 300 }),
+					new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 })))
+				{
+					Assert.NotNull(fragment);
+					Coordinate found = w.FindImage(bmp, fragment);
+					Assert.NotNull(found);
+					Point pt = found.ToRelative(w);
+					Assert.AreEqual(300, pt.X);
+					Assert.AreEqual(300, pt.Y);
+				}
+			}
 			w.Close();
 		}
 
@@ -535,6 +557,27 @@ namespace WindowEntity.Tests
 				List<tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
 				Assert.NotNull(words);
 			}
+		}
+
+		[Test]
+		public void RecognizeText()
+		{
+			WindowsMan.ResetWindows();
+			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
+			Assert.NotNull(p);
+			pProcessesToClean.Add(p);
+			Window w = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(w);
+			OcrWord[] words = w.RecognizeText(
+				new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 100 }),
+				new Coordinate(CoordinateType.Relative, new Point() { X = 430, Y = 120 }));
+			Assert.NotNull(words);
+			Assert.AreEqual(2, words.Length);
+			Assert.AreEqual("Large", words[0].Word);
+			Assert.AreNotEqual(OcrQuality.Bad, words[0].Quality);
+			Assert.AreEqual("text", words[1].Word);
+			Assert.AreNotEqual(OcrQuality.Bad, words[1].Quality);
+			w.Close();
 		}
 
 		[TearDown]

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Tesseract;
 
 namespace WindowEntity
 {
@@ -532,17 +533,18 @@ namespace WindowEntity
 		public Coordinate FindColorInRectangle(Color color, Coordinate topLeft, Coordinate bottomRight)
 		{
 			ActivateIfNeeded();
-			Bitmap bmp = Screenshot(topLeft, bottomRight);
-			for(int y = 0; y < bmp.Height; y++)
-				for(int x = 0; x < bmp.Width; x++)
-				{
-					if(CompareColors(color, bmp.GetPixel(x, y)))
+			using(Bitmap bmp = Screenshot(topLeft, bottomRight))
+			{
+				for(int y = 0; y < bmp.Height; y++)
+					for(int x = 0; x < bmp.Width; x++)
 					{
-						Point origin = topLeft.ToAbsolute(this);
-						return new Coordinate(CoordinateType.Absolute, new Point()
-							{ X = origin.X + x, Y = origin.Y + y });
+						if(CompareColors(color, bmp.GetPixel(x, y)))
+						{
+							Point origin = topLeft.ToAbsolute(this);
+							return new Coordinate(CoordinateType.Absolute, new Point() { X = origin.X + x, Y = origin.Y + y });
+						}
 					}
-				}
+			}
 			return null;
 		}
 
@@ -564,20 +566,22 @@ namespace WindowEntity
 			int bottom = (int)(centerpt.Y + radius);
 			bottom = bottom >= Height ? Height - 1 : bottom;
 
-			Bitmap bmp = Screenshot(
+			using(Bitmap bmp = Screenshot(
 				new Coordinate(CoordinateType.Absolute, new Point() { X = left, Y = top }),
-				new Coordinate(CoordinateType.Absolute, new Point() { X = right, Y = bottom }));
-			for(int y = 0; y < bmp.Height; y++)
-				for(int x = 0; x < bmp.Width; x++)
-				{
-					if(CompareColors(color, bmp.GetPixel(x, y)))
+				new Coordinate(CoordinateType.Absolute, new Point() { X = right, Y = bottom })))
+			{
+				for(int y = 0; y < bmp.Height; y++)
+					for(int x = 0; x < bmp.Width; x++)
 					{
-						if(IsInRadius(new Point() { X = x + left, Y = y + top }, centerpt, radius))
+						if(CompareColors(color, bmp.GetPixel(x, y)))
 						{
-							return new Coordinate(CoordinateType.Absolute, new Point() { X = left + x, Y = top + y });
+							if(IsInRadius(new Point() { X = x + left, Y = y + top }, centerpt, radius))
+							{
+								return new Coordinate(CoordinateType.Absolute, new Point() { X = left + x, Y = top + y });
+							}
 						}
 					}
-				}
+			}
 			return null;
 		}
 
@@ -717,6 +721,17 @@ namespace WindowEntity
 					}
 				}
 			return null;
+		}
+
+		public OcrWord[] RecognizeText(Coordinate topLeft, Coordinate bottomRight)
+		{
+			ActivateIfNeeded();
+			OcrWord[] ret = null;
+			using(Bitmap bmp = Screenshot(topLeft, bottomRight))
+			{
+				ret = WindowsMan.RecognizeTextWithZoom(bmp);
+			}
+			return ret;
 		}
 
 		#endregion

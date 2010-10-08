@@ -2,12 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Timers;
 
 namespace ExecutionActors
 {
+	public class CounterTimer : Timer
+	{
+		private int pCounter = 1;
+		private TimerCallback pCallback = null;
+
+		public delegate void TimerCallback();
+
+		public CounterTimer()
+			: base()
+		{}
+
+		public CounterTimer(double interval)
+			: base(interval)
+		{}
+
+		public int Counter
+		{
+			get { return pCounter; }
+			set { pCounter = value; }
+		}
+
+		public TimerCallback Callback
+		{
+			get { return pCallback; }
+			set { pCallback = value; }
+		}
+	}
+
 	public static class ActorsMan
 	{
+		private const int pDefaultCounter = 1;
+
 		private static List<Actor> pActors = new List<Actor>();
+		private static List<CounterTimer> pTimers = new List<CounterTimer>();
 
 		public static Actor NewActor(Type type, IActorObserver observer)
 		{
@@ -22,9 +54,41 @@ namespace ExecutionActors
 			return actor;
 		}
 
+		public static CounterTimer CreateTimer(CounterTimer.TimerCallback callback, int msec)
+		{
+			return CreateTimer(callback, msec, pDefaultCounter);
+		}
+
+		public static CounterTimer CreateTimer(CounterTimer.TimerCallback callback, int msec, int count)
+		{
+			CounterTimer timer = new CounterTimer(msec);
+			timer.Elapsed += new ElapsedEventHandler(TimeEvent);
+			timer.Counter = count;
+			timer.Callback = callback;
+			pTimers.Add(timer);
+			timer.Start();
+			return timer;
+		}
+
+		public static void TimeEvent(object source, ElapsedEventArgs e)
+		{
+			CounterTimer timer = (CounterTimer)source;
+			if(--timer.Counter <= 0)
+			{
+				timer.Stop();
+				pTimers.Remove(timer);
+			}
+			timer.Callback();
+		}
+
 		public static Actor[] Actors
 		{
 			get { return pActors.ToArray(); }
+		}
+
+		public static CounterTimer[] Timers
+		{
+			get { return pTimers.ToArray(); }
 		}
 	}
 }
