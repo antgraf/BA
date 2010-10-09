@@ -30,6 +30,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TessNet2", "TessNet2\TessNet2.csproj", "{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csproj", "{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gma.UserActivityMonitor", "GlobalHook\Gma.UserActivityMonitor\Gma.UserActivityMonitor.csproj", "{F52AA97E-180A-40ED-8F2B-09080171D6C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +72,14 @@ Global
 		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA8F6BC6-5654-4E0E-A0B5-BA6F9B8ACF0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F52AA97E-180A-40ED-8F2B-09080171D6C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52AA97E-180A-40ED-8F2B-09080171D6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52AA97E-180A-40ED-8F2B-09080171D6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52AA97E-180A-40ED-8F2B-09080171D6C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

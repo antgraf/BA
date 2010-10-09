@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using Gma.UserActivityMonitor;
+using System.Windows.Forms;
 
 namespace ExecutionActors
 {
-	public class CounterTimer : Timer
+	public class CounterTimer : System.Timers.Timer
 	{
 		private int pCounter = 1;
 		private TimerCallback pCallback = null;
@@ -40,6 +42,46 @@ namespace ExecutionActors
 
 		private static List<Actor> pActors = new List<Actor>();
 		private static List<CounterTimer> pTimers = new List<CounterTimer>();
+		private static bool pPaused = false;
+
+		static ActorsMan()
+		{
+			HookManager.KeyDown += new KeyEventHandler(HookManager_KeyDown);
+		}
+
+		public static void HookManager_KeyDown(object sender, KeyEventArgs e)
+		{
+			switch(e.KeyCode)
+			{
+				case Keys.Pause:
+				{
+					Pause();
+					e.Handled = true;
+					break;
+				}
+			}
+		}
+
+
+		public static void Pause()
+		{
+			lock(pActors)
+			{
+				foreach(Actor actor in pActors)
+				{
+					if(pPaused)
+					{
+						
+						actor.Continue();
+					}
+					else
+					{
+						actor.Pause();
+					}
+				}
+				pPaused = !pPaused;
+			}
+		}
 
 		public static Actor NewActor(Type type, IActorObserver observer)
 		{

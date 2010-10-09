@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9BECF6F2-38C4-4DBD-A02E-50E03649A42C}</ProjectGuid>
+    <ProjectGuid>{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExecutionActors</RootNamespace>
-    <AssemblyName>ExecutionActors</AssemblyName>
+    <RootNamespace>Logger</RootNamespace>
+    <AssemblyName>Logger</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,14 +32,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.5.7.10213, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Bin\nunit.framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -50,26 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actor.cs" />
-    <Compile Include="ActorsMan.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="IActorObserver.cs" />
-    <Compile Include="IPluginObserver.cs" />
-    <Compile Include="PluginBase.cs" />
-    <Compile Include="PluginsMan.cs" />
+    <Compile Include="FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Tests\ActorsManTest.cs" />
-    <Compile Include="Tests\ActorTest.cs" />
-    <Compile Include="Tests\PluginBaseTest.cs" />
-    <Compile Include="Tests\TestPluginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Tests\TestPluginForm.Designer.cs">
-      <DependentUpon>TestPluginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="XmlSerializableDictionary.cs" />
+    <Compile Include="Tests\FileLoggerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\BACommon.csproj">
@@ -77,21 +60,6 @@
       <Name>BACommon</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GlobalHook\Gma.UserActivityMonitor\Gma.UserActivityMonitor.csproj">
-      <Project>{F52AA97E-180A-40ED-8F2B-09080171D6C7}</Project>
-      <Name>Gma.UserActivityMonitor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Logger\Logger.csproj">
-      <Project>{DB4E442A-D760-4BA8-9D79-B70B2BDA1572}</Project>
-      <Name>Logger</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Tests\TestPluginForm.resx">
-      <DependentUpon>TestPluginForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

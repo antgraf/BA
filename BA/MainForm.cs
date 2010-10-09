@@ -67,7 +67,7 @@ namespace BA
 		{
 			Invoke(new MethodInvoker(delegate()
 			{
-				string msg = string.Format(pMsgFormatFull, module, stage, percentage);
+				string msg = string.Format(pMsgFormatPercent, module, stage, percentage);
 				txtboxOutput.Text += msg;
 				lblStatus.Text = stage;
 			}));
@@ -77,7 +77,7 @@ namespace BA
 		{
 			Invoke(new MethodInvoker(delegate()
 			{
-				string msg = string.Format(pMsgFormatFull, module, message);
+				string msg = string.Format(pMsgFormatBrief, module, message);
 				txtboxOutput.Text += msg;
 			}));
 		}

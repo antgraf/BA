@@ -3,6 +3,7 @@
   <Config name="Debug" binpathtype="Auto">
     <assembly path="Bin\ExecutionActors.dll" />
     <assembly path="Bin\WindowEntity.dll" />
+    <assembly path="Bin\Logger.dll" />
   </Config>
   <Config name="Release" binpathtype="Auto" />
 </NUnitProject>
