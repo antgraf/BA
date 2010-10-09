@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2139DE52-59C1-4B74-84AD-2688F2755C3D}"
 	ProjectSection(SolutionItems) = preProject
 		KeyCodes.txt = KeyCodes.txt
+		README = README
 		ThanksTo.txt = ThanksTo.txt
 	EndProjectSection
 EndProject
