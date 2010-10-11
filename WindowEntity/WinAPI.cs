@@ -412,6 +412,22 @@ namespace WindowEntity
 		}
 	}
 
+	[Flags]
+	internal enum WindowFromPointFlags
+	{
+		CWP_ALL = 0x0000,
+		CWP_SKIPINVISIBLE = 0x0001,
+		CWP_SKIPDISABLED = 0x0002,
+		CWP_SKIPTRANSPARENT = 0x0003
+	}
+
+	internal enum GetAncestor_Flags
+	{
+		GetParent = 1,
+		GetRoot = 2,
+		GetRootOwner = 3
+	}
+
 	internal sealed class WinAPI
 	{
 
@@ -493,5 +509,14 @@ namespace WindowEntity
 
 		[DllImport("gdi32.dll")]
 		internal static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
+
+		[DllImport("user32.dll")]
+		internal static extern IntPtr WindowFromPoint(POINT Point);
+
+		[DllImport("user32.dll")]
+		internal static extern IntPtr ChildWindowFromPointEx(IntPtr hWndParent, POINT pt, uint uFlags);
+
+		[DllImport("user32.dll", ExactSpelling = true)]
+		internal static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestor_Flags gaFlags);
 	}
 }

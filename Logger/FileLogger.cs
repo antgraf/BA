@@ -32,7 +32,7 @@ namespace Logger
 			Create(filename, local);
 		}
 
-		private void Create(string filename, bool local)
+		protected void Create(string filename, bool local)
 		{
 			if(local)
 			{
@@ -72,6 +72,11 @@ namespace Logger
 		public void Log(string source, string msg)
 		{
 			Log(source, msg, true);
+		}
+
+		public void Flush()
+		{
+			pLog.Flush();
 		}
 	}
 }

@@ -104,7 +104,7 @@ namespace WindowEntity
 
 		protected virtual bool IsActivationNeeded()
 		{
-			if(this.GetType().IsSubclassOf(typeof(Screen)) || this.GetType() == typeof(Screen))
+			if(this.GetType().IsSubclassOf(typeof(Desktop)) || this.GetType() == typeof(Desktop))
 			{
 				return false;
 			}
@@ -134,6 +134,14 @@ namespace WindowEntity
 			int diffb = Math.Abs((int)color1.B - (int)color2.B);
 			double diff = Math.Sqrt(diffr * diffr + diffg * diffg + diffb * diffb) / Math.Sqrt(255 * 255 * 3);
 			return diff <= pAllowedColorDeviation;
+		}
+
+		public static Window GetWindowAtCursor()
+		{
+			POINT pt = new POINT(Cursor.Position.X, Cursor.Position.Y);
+			IntPtr hWnd = WinAPI.WindowFromPoint(pt);
+			IntPtr parent = WinAPI.GetAncestor(hWnd, GetAncestor_Flags.GetRoot);
+			return Window.FromHandle(parent);
 		}
 
 		protected double Radius(Coordinate center, Coordinate radiusPoint)
@@ -175,7 +183,7 @@ namespace WindowEntity
 		public static Window FromHandle(IntPtr hwnd)
 		{
 			WindowRect rect = new WindowRect();
-			if(!WinAPI.GetWindowRect(hwnd, ref rect))
+			if(hwnd == IntPtr.Zero || !WinAPI.GetWindowRect(hwnd, ref rect))
 			{
 				return null;
 			}
