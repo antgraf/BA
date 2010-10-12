@@ -21,7 +21,7 @@ namespace PixelScout
 		private const string pLogHeader = "<html><body>\r\n";
 		private const string pLogFooter = "</html></body>\r\n";
 		private const string pLogRecordFormat = "<p><img src=\"file:///{1}\"></img>{0}</p>\r\n";
-		private const int pScreenshotRadius = 30;
+		private const int pScreenshotRadius = 50;
 
 		private FileLogger pLog = null;
 		private string pImagesFolder = null;
