@@ -46,7 +46,7 @@ namespace ExecutionActors
 			return FileUtils.MakeValidFileName(
 				string.Format(pLogNameFormat,
 					now.ToString(),
-					now.Ticks.ToString(),
+					Guid.NewGuid().ToString(),
 					this.GetType().ToString()));
 		}
 

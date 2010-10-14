@@ -9,6 +9,11 @@ namespace ExecutionActors
 	{
 		private static Dictionary<string, StateMachine> pStateMachines = new Dictionary<string, StateMachine>();
 
+		public StateMachine(State initialState)
+		{
+			pCurrentSubState = initialState;
+		}
+
 		public static StateMachine GetInstance(string id)
 		{
 			return pStateMachines[id];
