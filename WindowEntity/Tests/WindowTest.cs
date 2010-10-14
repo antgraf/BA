@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias tessnet2_32;
+extern alias tessnet2_64;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -544,17 +547,46 @@ namespace WindowEntity.Tests
 		[Test]
 		public void Tesseract()
 		{
-			Ocr ocr = new Ocr();
+			if(Globals.x64)
+			{
+				Tesseract_64();
+			}
+			else
+			{
+				Tesseract_32();
+			}
+		}
+
+		private void Tesseract_32()
+		{
+			Ocr32 ocr = new Ocr32();
 			Assert.NotNull(ocr);
 			using(Bitmap bmp = new Bitmap(pTestImagePath))
 			{
 				Assert.NotNull(bmp);
-				tessnet2.Tesseract tessocr = new tessnet2.Tesseract();
+				tessnet2_32::tessnet2.Tesseract tessocr = new tessnet2_32::tessnet2.Tesseract();
 				Assert.NotNull(tessocr);
 				tessocr.Init(null, "eng", false);
 				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save(FileUtils.CombineWinPath(pTempDirectory, Guid.NewGuid().ToString()) + ".bmp");
 				ocr.DoOCRMultiThred(bmp, "eng");
-				List<tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
+				List<tessnet2_32::tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
+				Assert.NotNull(words);
+			}
+		}
+
+		private void Tesseract_64()
+		{
+			Ocr64 ocr = new Ocr64();
+			Assert.NotNull(ocr);
+			using(Bitmap bmp = new Bitmap(pTestImagePath))
+			{
+				Assert.NotNull(bmp);
+				tessnet2_64::tessnet2.Tesseract tessocr = new tessnet2_64::tessnet2.Tesseract();
+				Assert.NotNull(tessocr);
+				tessocr.Init(null, "eng", false);
+				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save(FileUtils.CombineWinPath(pTempDirectory, Guid.NewGuid().ToString()) + ".bmp");
+				ocr.DoOCRMultiThred(bmp, "eng");
+				List<tessnet2_64::tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
 				Assert.NotNull(words);
 			}
 		}

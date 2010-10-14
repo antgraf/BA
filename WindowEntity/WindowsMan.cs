@@ -1,5 +1,8 @@
 ﻿//#define SaveDebugOcrImages
 
+extern alias tessnet2_32;
+extern alias tessnet2_64;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,7 @@ using System.Diagnostics;
 using Tesseract;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using BACommon;
 
 namespace WindowEntity
 {
@@ -33,8 +37,8 @@ namespace WindowEntity
 		private const double pDefaultZoomFactor = 3.0;
 		private const int pSecond = 1000;
 
-		private static Ocr pOcr = new Ocr();
-		private static tessnet2.Tesseract pTesseract = new tessnet2.Tesseract();
+		private static Ocr pOcr = null;
+		private static object pTesseract = null;
 		private static bool pTesseractInitialized = false;
 		private static List<Window> pRegisteredWindows = new List<Window>();
 
@@ -42,9 +46,30 @@ namespace WindowEntity
 		{
 			if(!pTesseractInitialized)
 			{
-				pTesseract.Init(null, "eng", false);
+				if(Globals.x64)
+				{
+					InitTesseract64();
+				}
+				else
+				{
+					InitTesseract32();
+				}
 				pTesseractInitialized = true;
 			}
+		}
+
+		private static void InitTesseract32()
+		{
+			pOcr = new Ocr32();
+			pTesseract = new tessnet2_32::tessnet2.Tesseract();
+			((tessnet2_32::tessnet2.Tesseract)pTesseract).Init(null, "eng", false);
+		}
+
+		private static void InitTesseract64()
+		{
+			pOcr = new Ocr64();
+			pTesseract = new tessnet2_64::tessnet2.Tesseract();
+			((tessnet2_64::tessnet2.Tesseract)pTesseract).Init(null, "eng", false);
 		}
 
 		public static bool RegisterWindow(Window window)
@@ -192,17 +217,62 @@ namespace WindowEntity
 
 		public static OcrWord[] RecognizeText(Bitmap image)
 		{
+			InitTesseract();
+			if(Globals.x64)
+			{
+				return RecognizeText64(image);
+			}
+			else
+			{
+				return RecognizeText32(image);
+			}
+		}
+
+		private static OcrWord[] RecognizeText32(Bitmap image)
+		{
 #if SaveDebugOcrImages
-			pTesseract.GetThresholdedImage(image, Rectangle.Empty).Save(Guid.NewGuid().ToString() + ".bmp");
+			((tessnet2_32::tessnet2.Tesseract)pTesseract).GetThresholdedImage(image, Rectangle.Empty).Save(Guid.NewGuid().ToString() + ".bmp");
 #endif
-			List<tessnet2.Word> words = pOcr.DoOCRNormal(image, "eng");
+			List<tessnet2_32::tessnet2.Word> words = ((Ocr32)pOcr).DoOCRNormal(image, "eng");
 			if(words == null)
 			{
 				return null;
 			}
 			List<OcrWord> ret = new List<OcrWord>();
 			OcrQuality quality;
-			foreach(tessnet2.Word word in words)
+			foreach(tessnet2_32::tessnet2.Word word in words)
+			{
+				if(word.Confidence < 80)
+				{
+					quality = OcrQuality.Good;
+				}
+				else if(word.Confidence < 160)
+				{
+					quality = OcrQuality.Normal;
+				}
+				else
+				{
+					quality = OcrQuality.Bad;
+				}
+				OcrWord newword = new OcrWord() { Word = word.Text, Quality = quality };
+				ret.Add(newword);
+			}
+			return ret.ToArray();
+		}
+
+		private static OcrWord[] RecognizeText64(Bitmap image)
+		{
+#if SaveDebugOcrImages
+			((tessnet2_64::tessnet2.Tesseract)pTesseract).GetThresholdedImage(image, Rectangle.Empty).Save(Guid.NewGuid().ToString() + ".bmp");
+#endif
+			List<tessnet2_64::tessnet2.Word> words = ((Ocr64)pOcr).DoOCRNormal(image, "eng");
+			if(words == null)
+			{
+				return null;
+			}
+			List<OcrWord> ret = new List<OcrWord>();
+			OcrQuality quality;
+			foreach(tessnet2_64::tessnet2.Word word in words)
 			{
 				if(word.Confidence < 80)
 				{

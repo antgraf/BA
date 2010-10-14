@@ -48,7 +48,12 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="tessnet2_32, Version=2.0.4.0, Culture=neutral, PublicKeyToken=1550524b5ba07e29, processorArchitecture=x86">
+      <Aliases>tessnet2_32</Aliases>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="tessnet2_64, Version=2.0.4.0, Culture=neutral, PublicKeyToken=1550524b5ba07e29, processorArchitecture=AMD64">
+      <Aliases>tessnet2_64</Aliases>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

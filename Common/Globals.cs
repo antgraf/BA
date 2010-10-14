@@ -28,5 +28,12 @@ namespace BACommon
 		/// Version Control System brief version information.
 		/// </summary>
 		public const string VersionText = "BA Pre-Alpha 0.1.0";
+		public static bool x64
+		{
+			get
+			{
+				return IntPtr.Size == 8;
+			}
+		}
 	}
 }
