@@ -21,8 +21,8 @@ namespace ExecutionActors
 		private void ChangeSubState(State from, State to)
 		{
 			// TODO add events
-			from.Leave();
-			to.Enter();
+			from._Leave();
+			to._Enter();
 		}
 
 		protected void SendEvent(int eventId)
@@ -74,6 +74,24 @@ namespace ExecutionActors
 
 		public virtual void Enter()
 		{}
+
+		private void _Leave()
+		{
+			if(pCurrentSubState != null)
+			{
+				pCurrentSubState._Leave();
+			}
+			Leave();
+		}
+
+		private void _Enter()
+		{
+			Enter();
+			if(pCurrentSubState != null)
+			{
+				pCurrentSubState._Enter();
+			}
+		}
 
 		public State CurrentSubState
 		{

@@ -24,6 +24,7 @@ namespace BA
 		{
 			try
 			{
+				pObserver.Notify(pPlugin, "Launch plugin");
 				pPlugin.ShowUI();
 			}
 			catch(Exception ex)
