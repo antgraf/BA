@@ -20,20 +20,21 @@ namespace PixelScout
 		private const string pImageExtension = ".png";
 		private const string pLogHeader = "<html><body>\r\n";
 		private const string pLogFooter = "</html></body>\r\n";
-		private const string pLogRecordFormat = "<p><img src=\"file:///{1}\"></img>{0}</p>\r\n";
+		private const string pLogRecordFormat = "<p><img src=\"file:{1}\"></img>{0}</p>\r\n";
 		private const int pScreenshotRadius = 50;
 
 		private FileLogger pLog = null;
+		private string pLogFileName = null;
 		private string pImagesFolder = null;
 
 		public HtmlRecorder()
 		{
-			string filename = FileUtils.Relative2AbsolutePath(
+			pLogFileName = FileUtils.Relative2AbsolutePath(
 				FileUtils.CombineWinPath(pLogFolder,
 					FileUtils.MakeValidFileName(DateTime.Now.ToString()) + pLogExtension));
-			pLog = new FileLogger(filename, false);
+			pLog = new FileLogger(pLogFileName, false);
 			pLog.Log(pLogHeader, false);
-			pImagesFolder = filename + pImagesFolderExtension;
+			pImagesFolder = pLogFileName + pImagesFolderExtension;
 			Directory.CreateDirectory(pImagesFolder);
 		}
 
@@ -41,6 +42,13 @@ namespace PixelScout
 		{
 			string filename =  FileUtils.MakeValidFileName(Guid.NewGuid().ToString()) + pImageExtension;
 			return FileUtils.CombineWinPath(pImagesFolder, filename);
+		}
+
+		private string GetRelativeImagePath(string fullPath)
+		{
+			string path = FileUtils.ExtractFileName(pLogFileName) + pImagesFolderExtension;
+			string filename = FileUtils.ExtractFileName(fullPath);
+			return FileUtils.CombineWinPath(path, filename);
 		}
 
 		private string Screenshot()
@@ -94,7 +102,7 @@ namespace PixelScout
 		{
 			try
 			{
-				Click(PointInformation(), Screenshot().Replace(':', '|'));
+				Click(PointInformation(), GetRelativeImagePath(Screenshot()));
 			}
 			catch(Exception)
 			{
