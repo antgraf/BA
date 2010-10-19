@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 
 namespace PixelScout
 {
@@ -86,7 +87,7 @@ namespace PixelScout
 				text.Append("; Relative: ");
 				text.AppendFormat("{0}, {1}", rel.X, rel.Y);
 				text.Append("; Stretched: ");
-				text.AppendFormat("{0}, {1}", st.X, st.Y);
+				text.AppendFormat(CultureInfo.InvariantCulture, "{0}, {1}", st.X, st.Y);
 			}
 			else
 			{

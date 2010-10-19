@@ -22,6 +22,7 @@ namespace ExecutionActors
 		{
 			// TODO add events
 			from._Leave();
+			pCurrentSubState = to;
 			to._Enter();
 		}
 

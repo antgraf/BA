@@ -138,6 +138,10 @@ namespace ExecutionActors
 			{
 				pUnhandledException = ex;
 				pStatus = ActorStatus.UnhandledException;
+				if(pObserver != null)
+				{
+					pObserver.Notify(this, ex.ToString());
+				}
 			}
 		}
 
