@@ -221,8 +221,9 @@ namespace WindowEntity
 		{
 			//if(percentDelta >= 100) throw new ArgumentException("Percentage deviation should be < 100%", "percentDelta");
 			int minmsec = (int)(msec - msec * (percentDelta / 100.0));
-			if(minmsec <= 0) minmsec = 1;
+			if(minmsec < 0) minmsec = 0;
 			int maxmsec = (int)(msec + msec * (percentDelta / 100.0));
+			if(maxmsec <= 0) maxmsec = 1;
 			WaitRandomInRangeGlobal(minmsec, maxmsec);
 		}
 
@@ -246,8 +247,9 @@ namespace WindowEntity
 		{
 			//if(percentDelta >= 100) throw new ArgumentException("Percentage deviation should be < 100%", "percentDelta");
 			int minmsec = (int)(msec - msec * (percentDelta / 100.0));
-			if(minmsec <= 0) minmsec = 1;
+			if(minmsec < 0) minmsec = 0;
 			int maxmsec = (int)(msec + msec * (percentDelta / 100.0));
+			if(maxmsec <= 0) maxmsec = 1;
 			WaitRandomInRange(minmsec, maxmsec);
 		}
 
@@ -475,6 +477,18 @@ namespace WindowEntity
 		{
 			ActivateIfNeeded();
 			InputSimulator.SimulateKeyUp(VirtualKeyCode.LWIN);
+		}
+
+		public virtual void CtrlKeyDown()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyDown(VirtualKeyCode.LCONTROL);
+		}
+
+		public virtual void CtrlKeyUp()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyUp(VirtualKeyCode.LCONTROL);
 		}
 
 		public virtual void KeySend(string keys)
