@@ -50,7 +50,7 @@ namespace ExecutionActors
 			return null;
 		}
 
-		public State HandleEvent(int eventId)
+		public virtual State HandleEvent(int eventId)
 		{
 			// TODO add events
 			State newState = HandleEventCustom(eventId);
