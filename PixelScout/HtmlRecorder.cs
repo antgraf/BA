@@ -83,11 +83,11 @@ namespace PixelScout
 				text.Append("<br><b>Color</b>: ");
 				text.AppendLine(color.ToString());
 				text.Append("<br><b>Coordinate</b>: Absolute: ");
-				text.AppendFormat("{0}, {1}", pt.X, pt.Y);
+				text.AppendFormat("X = {0}, Y = {1}", pt.X, pt.Y);
 				text.Append("; Relative: ");
-				text.AppendFormat("{0}, {1}", rel.X, rel.Y);
+				text.AppendFormat("X = {0}, Y = {1}", rel.X, rel.Y);
 				text.Append("; Stretched: ");
-				text.AppendFormat(CultureInfo.InvariantCulture, "{0}, {1}", st.X, st.Y);
+				text.AppendFormat(CultureInfo.InvariantCulture, "X = {0}, Y = {1}", st.X, st.Y);
 			}
 			else
 			{
