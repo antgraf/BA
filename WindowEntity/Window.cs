@@ -91,7 +91,7 @@ namespace WindowEntity
 		private static Random pRandom = new Random();
 
 		private double pAllowedColorDeviation = 0.0;
-		private double pAllowedImageDeviation = 0.0;
+		private double pAllowedImageNoisePixels = 0.0;
 		private double pTimeMultiplier = 1.0;
 		private int pWidth = -1;
 		private int pHeight = -1;
@@ -661,12 +661,12 @@ namespace WindowEntity
 			return true;
 		}
 
-		public bool CompareImages(Bitmap baseline, Bitmap image)
+		public bool CompareImagesWithNoise(Bitmap baseline, Bitmap image)
 		{
-			return CompareImages(baseline, image, null);
+			return CompareImagesWithNoise(baseline, image, null);
 		}
 
-		protected bool CompareImages(Bitmap baseline, Bitmap image, Point? fragment)
+		protected bool CompareImagesWithNoise(Bitmap baseline, Bitmap image, Point? fragment)
 		{
 			if((fragment == null && (baseline.Size.Width != image.Size.Width || baseline.Size.Height != image.Size.Height)) ||
 				(fragment != null && (baseline.Size.Width < image.Size.Width + fragment.Value.X ||
@@ -682,7 +682,7 @@ namespace WindowEntity
 				{
 					if(baseline.GetPixel(x + startx, y + starty).ToArgb() != image.GetPixel(x, y).ToArgb())
 					{
-						if(((double)++diff) / (baseline.Size.Width * baseline.Size.Height) > pAllowedImageDeviation)
+						if(((double)++diff) / (baseline.Size.Width * baseline.Size.Height) > pAllowedImageNoisePixels)
 						{
 							return false;
 						}
@@ -727,7 +727,7 @@ namespace WindowEntity
 			return null;
 		}
 
-		public Coordinate FindImage(Bitmap image, Bitmap fragment)
+		public Coordinate FindImageWithNoise(Bitmap image, Bitmap fragment)
 		{
 			if(fragment.Size.Width > image.Size.Width || fragment.Size.Height > image.Size.Height)
 			{
@@ -737,7 +737,7 @@ namespace WindowEntity
 				for(int x = 0; x < image.Width - fragment.Width; x++)
 				{
 					Point pt = new Point() { X = x, Y = y };
-					if(CompareImages(image, fragment, pt))
+					if(CompareImagesWithNoise(image, fragment, pt))
 					{
 						return new Coordinate(CoordinateType.Relative, pt);
 					}
@@ -808,10 +808,10 @@ namespace WindowEntity
 			set { pAllowedColorDeviation = value; }
 		}
 
-		public double AllowedImageDeviation
+		public double AllowedImageNoisePixels
 		{
-			get { return pAllowedImageDeviation; }
-			set { pAllowedImageDeviation = value; }
+			get { return pAllowedImageNoisePixels; }
+			set { pAllowedImageNoisePixels = value; }
 		}
 
 		#endregion;

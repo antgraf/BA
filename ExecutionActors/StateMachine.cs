@@ -8,11 +8,11 @@ namespace ExecutionActors
 {
 	public class StateMachine : State
 	{
-		private const double pSctivationInterval = 1.0 * 1000;
+		private const double pActivationInterval = 1.0 * 1000;
 
 		private static Dictionary<string, StateMachine> pStateMachines = new Dictionary<string, StateMachine>();
 		private Queue<int> pEventQueue = new Queue<int>();
-		private Timer pActivationTimer = new Timer(pSctivationInterval);
+		private Timer pActivationTimer = new Timer(pActivationInterval);
 
 		public StateMachine(State initialState)
 		{

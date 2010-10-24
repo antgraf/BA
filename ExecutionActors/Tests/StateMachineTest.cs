@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using System.Threading;
 
 namespace ExecutionActors.Tests
 {
@@ -26,11 +27,19 @@ namespace ExecutionActors.Tests
 	{
 		public const string Id = "antgraf.Test.TrafficLights";
 
+		private const int pWaitTimeMs = 1500;
+
 		private TrafficLights pCurrentLight = TrafficLights.Yellow;
 		private bool pIsTurnedOff = true;
+
 		public TrafficLightsStateMachine(TrafficLightsState initialState)
 			: base(initialState)
 		{}
+
+		public static void Wait()
+		{
+			Thread.Sleep(pWaitTimeMs);
+		}
 
 		public TrafficLightsState HandleEvent(TrafficLightsEvents eventId)
 		{
@@ -214,24 +223,31 @@ namespace ExecutionActors.Tests
 			Assert.AreEqual(true, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.TurnOn);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.TurnOn);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.Switch);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Green, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.Switch);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.Switch);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Red, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.Switch);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(false, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 			machine.HandleEvent(TrafficLightsEvents.TurnOff);
+			TrafficLightsStateMachine.Wait();
 			Assert.AreEqual(true, machine.IsTurnedOff);
 			Assert.AreEqual(TrafficLights.Yellow, machine.CurrentLight);
 		}

@@ -19,7 +19,7 @@ namespace BACommon
 		/// <summary>
 		/// Version Control System minor version.
 		/// </summary>
-		public const string MinorVersion = "1";
+		public const string MinorVersion = "4";
 		/// <summary>
 		/// Version Control System patch version.
 		/// </summary>
@@ -27,7 +27,7 @@ namespace BACommon
 		/// <summary>
 		/// Version Control System brief version information.
 		/// </summary>
-		public const string VersionText = "BA Pre-Alpha 0.1.0";
+		public const string VersionText = "BA Alpha 0.4.0";
 		public static bool x64
 		{
 			get

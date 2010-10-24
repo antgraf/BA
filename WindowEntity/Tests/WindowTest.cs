@@ -447,7 +447,7 @@ namespace WindowEntity.Tests
 		}
 
 		[Test]
-		public void CompareImages()
+		public void CompareImagesWithNoise()
 		{
 			WindowsMan.ResetWindows();
 			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
@@ -458,7 +458,7 @@ namespace WindowEntity.Tests
 			using(Bitmap bmp = w.Screenshot())
 			{
 				Assert.NotNull(bmp);
-				Assert.True(w.CompareImages(bmp, bmp));
+				Assert.True(w.CompareImagesWithNoise(bmp, bmp));
 			}
 			w.Close();
 		}
@@ -518,7 +518,7 @@ namespace WindowEntity.Tests
 		}
 
 		[Test]
-		public void FindImage()
+		public void FindImageWithNoise()
 		{
 			WindowsMan.ResetWindows();
 			Process p = WindowsMan.RunProcess(Definitions.PathToSampleApp);
@@ -534,7 +534,7 @@ namespace WindowEntity.Tests
 					new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 })))
 				{
 					Assert.NotNull(fragment);
-					Coordinate found = w.FindImage(bmp, fragment);
+					Coordinate found = w.FindImageWithNoise(bmp, fragment);
 					Assert.NotNull(found);
 					Point pt = found.ToRelative(w);
 					Assert.AreEqual(300, pt.X);
