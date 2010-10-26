@@ -612,6 +612,19 @@ namespace WindowEntity.Tests
 			w.Close();
 		}
 
+		[Test]
+		public void CompareColors()
+		{
+			Window w = new Window();
+			Assert.NotNull(w);
+			w.AllowedColorDeviation = 0.003;	// < 0.0022641187027044
+			Color c1 = Color.FromArgb(0, 1, 0);
+			Color c2 = Color.FromArgb(0, 2, 0);
+			Color c3 = Color.FromArgb(0, 3, 0);
+			Assert.True(w.CompareColors(c1, c2));
+			Assert.False(w.CompareColors(c1, c3));
+		}
+
 		[TearDown]
 		public void CleanUpOnError()
 		{

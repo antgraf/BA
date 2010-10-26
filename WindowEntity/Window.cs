@@ -83,9 +83,12 @@ namespace WindowEntity
 
 	public class Window
 	{
+		public const double NormalizationCoefficientForColorDeviation = 441.6729559300637;
+		public const double MinColorDeviation = 0.0022641187027044;
+
 		private const int MaxTitleLength = 512;
 		private const int DefaultTimerDeviationPercent = 15;
-		private const int DefaultTimerKeyWait = 100;
+		private const int DefaultTimerKeyWait = 300;
 		private const int WHEEL_DELTA = 120;
 
 		private static Random pRandom = new Random();
@@ -802,6 +805,9 @@ namespace WindowEntity
 			set { pHandle = value; }
 		}
 
+		/// <summary>
+		/// normalized by 441.6729559300637 = 0.0 to 1.0
+		/// </summary>
 		public double AllowedColorDeviation
 		{
 			get { return pAllowedColorDeviation; }
