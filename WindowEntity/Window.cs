@@ -445,8 +445,15 @@ namespace WindowEntity
 		public virtual void DragDrop(Coordinate from, Coordinate to)
 		{
 			Click(MouseActions.LeftDown, from);
-			WaitRandom(150);
+			WaitRandom(300);
 			Click(MouseActions.LeftUp, to);
+		}
+
+		public virtual void DragDropRight(Coordinate from, Coordinate to)
+		{
+			Click(MouseActions.RightDown, from);
+			WaitRandom(300);
+			Click(MouseActions.RightUp, to);
 		}
 
 		public virtual void DoubleClick(Coordinate point)
