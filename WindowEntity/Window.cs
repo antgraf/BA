@@ -501,6 +501,18 @@ namespace WindowEntity
 			InputSimulator.SimulateKeyUp(VirtualKeyCode.LCONTROL);
 		}
 
+		public virtual void AltKeyDown()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyDown(VirtualKeyCode.LMENU);
+		}
+
+		public virtual void AltKeyUp()
+		{
+			ActivateIfNeeded();
+			InputSimulator.SimulateKeyUp(VirtualKeyCode.LMENU);
+		}
+
 		public virtual void KeySend(string keys)
 		{
 			ActivateIfNeeded();
