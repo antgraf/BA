@@ -9,8 +9,8 @@ namespace Gma.UserActivityMonitor {
     /// </summary>
     public static partial class HookManager
     {
-        //################################################################
-        #region Mouse events
+// ReSharper disable InconsistentNaming
+		#region Mouse events
 
         private static event MouseEventHandler s_MouseMove;
 
@@ -250,7 +250,6 @@ namespace Gma.UserActivityMonitor {
         }
         #endregion
 
-        //################################################################
         #region Keyboard events
 
         private static event KeyPressEventHandler s_KeyPress;
@@ -324,5 +323,6 @@ namespace Gma.UserActivityMonitor {
 
 
         #endregion
-    }
+// ReSharper restore InconsistentNaming
+	}
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Logger;
 using BACommon;
@@ -24,16 +22,16 @@ namespace PixelScout
 		private const string pLogRecordFormat = "<p><img src=\"file:{1}\"></img>{0}</p>\r\n";
 		private const int pScreenshotRadius = 50;
 
-		private FileLogger pLog = null;
-		private string pLogFileName = null;
-		private string pImagesFolder = null;
+		private readonly FileLogger pLog = null;
+		private readonly string pLogFileName = null;
+		private readonly string pImagesFolder = null;
 
 		public HtmlRecorder()
 		{
 			pLogFileName = FileUtils.Relative2AbsolutePath(
 				FileUtils.CombineWinPath(pLogFolder,
 					FileUtils.MakeValidFileName(DateTime.Now.ToString()) + pLogExtension));
-			pLog = new FileLogger(pLogFileName, false);
+			pLog = new FileLogger(pLogFileName);
 			pLog.Log(pLogHeader, false);
 			pImagesFolder = pLogFileName + pImagesFolderExtension;
 			Directory.CreateDirectory(pImagesFolder);
@@ -66,7 +64,7 @@ namespace PixelScout
 			return filename;
 		}
 
-		private string PointInformation()
+		private static string PointInformation()
 		{
 			StringBuilder text = new StringBuilder();
 			Window window = Window.GetWindowAtCursor();
@@ -105,7 +103,9 @@ namespace PixelScout
 			{
 				Click(PointInformation(), GetRelativeImagePath(Screenshot()));
 			}
-			catch(Exception)
+// ReSharper disable EmptyGeneralCatchClause
+			catch
+// ReSharper restore EmptyGeneralCatchClause
 			{
 				// ignore
 			}

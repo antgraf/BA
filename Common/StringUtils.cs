@@ -1,15 +1,17 @@
 using System;
 using System.Text;
 
+// ReSharper disable CheckNamespace
 namespace BACommon
+// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Utility class for string manipulations.
 	/// </summary>
-	public sealed class StringUtils
+	public static class StringUtils
 	{
-		private static char[] HexDigitsUpper = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-		private static char[] HexDigitsLower = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		private static readonly char[] hexDigitsUpper = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+		private static readonly char[] hexDigitsLower = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
 		/// <summary>
 		/// Checks if string is null or has zero-length.
@@ -18,7 +20,7 @@ namespace BACommon
 		/// <returns>True if string is null or has zero-length. False otherwise.</returns>
 		public static bool IsEmpty(string str)
 		{
-			return str == null || str.Length == 0;
+			return string.IsNullOrEmpty(str);
 		}
 
 		/// <summary>
@@ -71,27 +73,17 @@ namespace BACommon
 		/// <param name="bytes">Bytes array to encode.</param>
 		/// <param name="upperCase">Generate uppercase hex-codes flag.</param>
 		/// <returns>Hex-string.</returns>
-		public static string ConvertToHexString(byte[] bytes, bool upperCase)
+		public static string ConvertToHexString(byte[] bytes, bool upperCase = false)
 		{
-			char[] HexDigits = upperCase ? HexDigitsUpper : HexDigitsLower;
+			char[] hexDigits = upperCase ? hexDigitsUpper : hexDigitsLower;
 			char[] chars = new char[bytes.Length * 2];
 			for(int i = 0; i < bytes.Length; i++)
 			{
 				int b = bytes[i];
-				chars[i * 2] = HexDigits[b >> 4];
-				chars[i * 2 + 1] = HexDigits[b & 0xF];
+				chars[i * 2] = hexDigits[b >> 4];
+				chars[i * 2 + 1] = hexDigits[b & 0xF];
 			}
 			return new string(chars);
-		}
-
-		/// <summary>
-		/// Encodes Hex-string.
-		/// </summary>
-		/// <param name="bytes">Bytes array to encode.</param>
-		/// <returns>Hex-string.</returns>
-		public static string ConvertToHexString(byte[] bytes)
-		{
-			return ConvertToHexString(bytes, false);
 		}
 
 		/// <summary>

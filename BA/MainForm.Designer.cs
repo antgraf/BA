@@ -68,14 +68,14 @@
 			this.refreshPluginsToolStripMenuItem.Name = "refreshPluginsToolStripMenuItem";
 			this.refreshPluginsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.refreshPluginsToolStripMenuItem.Text = "&Refresh plugins";
-			this.refreshPluginsToolStripMenuItem.Click += new System.EventHandler(this.refreshPluginsToolStripMenuItem_Click);
+			this.refreshPluginsToolStripMenuItem.Click += new System.EventHandler(this.RefreshPluginsToolStripMenuItemClick);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			this.exitToolStripMenuItem.Click += new System.EventHandler(ExitToolStripMenuItemClick);
 			// 
 			// mnuitemPlugins
 			// 
@@ -96,7 +96,7 @@
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
-			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItemClick);
 			// 
 			// statusBar
 			// 
@@ -136,7 +136,7 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "MainForm";
 			this.Text = "BA (in development)";
-			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.statusBar.ResumeLayout(false);

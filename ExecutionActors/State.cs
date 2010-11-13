@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ExecutionActors
 {
 	public class State
 	{
+// ReSharper disable InconsistentNaming
 		protected string pStateMachineId = "Common";
 		protected State pCurrentSubState = null;
-		protected List<TransitionBase> pTransitions = new List<TransitionBase>();
+		protected readonly List<TransitionBase> pTransitions = new List<TransitionBase>();
 		protected object pArgumentToNextState = null;
-
-		public State()
-		{}
+// ReSharper restore InconsistentNaming
 
 		public virtual void Init(object arg)
 		{}
@@ -31,7 +27,9 @@ namespace ExecutionActors
 			StateMachine.GetInstance(pStateMachineId).HandleEvent(eventId);
 		}
 
+// ReSharper disable InconsistentNaming
 		private State _HandleEvent(int eventId)
+// ReSharper restore InconsistentNaming
 		{
 			State newState = null;
 			foreach(TransitionBase transition in pTransitions)
@@ -53,11 +51,7 @@ namespace ExecutionActors
 		public virtual State HandleEvent(int eventId)
 		{
 			// TODO add events
-			State newState = HandleEventCustom(eventId);
-			if(newState == null)
-			{
-				newState = _HandleEvent(eventId);
-			}
+			State newState = HandleEventCustom(eventId) ?? _HandleEvent(eventId);
 			if(newState == null && pCurrentSubState != null)
 			{
 				State newSubState = pCurrentSubState.HandleEvent(eventId);
@@ -76,7 +70,9 @@ namespace ExecutionActors
 		public virtual void Enter()
 		{}
 
+// ReSharper disable InconsistentNaming
 		private void _Leave()
+// ReSharper restore InconsistentNaming
 		{
 			if(pCurrentSubState != null)
 			{
@@ -85,7 +81,9 @@ namespace ExecutionActors
 			Leave();
 		}
 
+// ReSharper disable InconsistentNaming
 		private void _Enter()
+// ReSharper restore InconsistentNaming
 		{
 			Enter();
 			if(pCurrentSubState != null)

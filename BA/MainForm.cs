@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using BA.Properties;
 using ExecutionActors;
 using BACommon;
 
@@ -31,9 +26,11 @@ namespace BA
 				mnuitemPlugins.DropDownItems.Clear();
 				if(plugins.Length == 0)
 				{
-					ToolStripMenuItem item = new ToolStripMenuItem();
-					item.Text = "<No plugins found>";
-					item.Enabled = false;
+					ToolStripMenuItem item = new ToolStripMenuItem
+					                         	{
+					                         		Text = Resources.MainForm_LoadPlugins__No_plugins_found_,
+					                         		Enabled = false
+					                         	};
 					mnuitemPlugins.DropDownItems.Add(item);
 				}
 				else
@@ -56,7 +53,8 @@ namespace BA
 
 		public void Notify(PluginBase module, string stage, int percentage, string message)
 		{
-			Invoke(new MethodInvoker(delegate(){
+			Invoke(new MethodInvoker(delegate
+			{
 				string msg = string.Format(pMsgFormatFull, module, stage, percentage, message);
 				txtboxOutput.Text += msg;
 				lblStatus.Text = stage;
@@ -65,7 +63,7 @@ namespace BA
 
 		public void Notify(PluginBase module, string stage, int percentage)
 		{
-			Invoke(new MethodInvoker(delegate()
+			Invoke(new MethodInvoker(delegate
 			{
 				string msg = string.Format(pMsgFormatPercent, module, stage, percentage);
 				txtboxOutput.Text += msg;
@@ -75,7 +73,7 @@ namespace BA
 
 		public void Notify(PluginBase module, string message)
 		{
-			Invoke(new MethodInvoker(delegate()
+			Invoke(new MethodInvoker(delegate
 			{
 				string msg = string.Format(pMsgFormatBrief, module, message);
 				txtboxOutput.Text += msg;
@@ -86,28 +84,28 @@ namespace BA
 
 		public void Notify(string message)
 		{
-			txtboxOutput.Text += message + "\r\n";
+			txtboxOutput.Text += message + Resources.MainForm_Notify_;
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		private static void ExitToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			Application.Exit();
 		}
 
-		private void refreshPluginsToolStripMenuItem_Click(object sender, EventArgs e)
+		private void RefreshPluginsToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			LoadPlugins();
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+		private void MainFormLoad(object sender, EventArgs e)
 		{
 			LoadPlugins();
 		}
 
-		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+		private void AboutToolStripMenuItemClick(object sender, EventArgs e)
 		{
 			string about = string.Format("{0}\r\n(C) 2010 antgraf", Globals.VersionText);
-			MessageBox.Show(this, about, "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, about, Resources.MainForm_AboutToolStripMenuItemClick_About, MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 	}
 }

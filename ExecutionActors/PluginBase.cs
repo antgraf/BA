@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BACommon;
-using System.IO;
+﻿using BACommon;
 
 namespace ExecutionActors
 {
@@ -11,22 +6,24 @@ namespace ExecutionActors
 	{
 		private const string pSettingsFileExtension = ".xml";
 
+// ReSharper disable InconsistentNaming
 		protected Settings pSettings = null;
 		protected string pPluginName = null;
 		protected string pAbsoluteSettingsFolder = null;
-		protected string pRelativeSettingsFolder = null;
+		protected readonly string pRelativeSettingsFolder = null;
 		protected Actor pActor = null;
 		protected IPluginObserver pObserver = null;
+// ReSharper restore InconsistentNaming
 
 		private string GetDefaultSettingsName()
 		{
-			string filename = this.GetType().ToString() + pSettingsFileExtension;
+			string filename = GetType() + pSettingsFileExtension;
 			return FileUtils.MakeValidFileName(filename);
 		}
 
 		private string GetSettingsFileName()
 		{
-			string filename = null;
+			string filename;
 			if(pPluginName != null)
 			{
 				filename = pPluginName + pSettingsFileExtension;

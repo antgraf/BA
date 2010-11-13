@@ -1,11 +1,13 @@
 using System;
 
+// ReSharper disable CheckNamespace
 namespace BACommon
+// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Stores global constants and values used in other BA components and libraries.
 	/// </summary>
-	public class Globals
+	public static class Globals
 	{
 		// VERSION INFORMATION
 		/// <summary>
@@ -28,7 +30,12 @@ namespace BACommon
 		/// Version Control System brief version information.
 		/// </summary>
 		public const string VersionText = "BA Alpha 0.4.0";
+		/// <summary>
+		/// x64 platform marker.
+		/// </summary>
+// ReSharper disable InconsistentNaming
 		public static bool x64
+// ReSharper restore InconsistentNaming
 		{
 			get
 			{

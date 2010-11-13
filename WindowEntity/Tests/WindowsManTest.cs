@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.Drawing;
@@ -23,8 +20,10 @@ namespace WindowEntity.Tests
 		{
 			WindowsMan.ResetWindows();
 			Assert.AreEqual(0, WindowsMan.RegisteredWindows.Length);
-			Window w1 = new Window();
-			w1.Handle = new WindowHandle() { Handle = new IntPtr(2222) };
+			Window w1 = new Window
+			            	{
+			            		Handle = new WindowHandle() {Handle = new IntPtr(2222)}
+			            	};
 			Assert.NotNull(w1);
 			Window w2 = new Window();
 			Assert.NotNull(w2);

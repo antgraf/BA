@@ -3,13 +3,10 @@ extern alias tessnet2_64;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.Drawing;
 using BACommon;
-using System.Drawing.Imaging;
 using Tesseract;
 
 namespace WindowEntity.Tests
@@ -19,7 +16,7 @@ namespace WindowEntity.Tests
 	{
 		private const string pTempDirectory = @"C:\Temp";
 		private const string pTestImagePath = @"..\TessNet2\test\text.png";
-		private List<Process> pProcessesToClean = new List<Process>();
+		private readonly List<Process> pProcessesToClean = new List<Process>();
 
 		[Test]
 		public void Create()
@@ -50,19 +47,15 @@ namespace WindowEntity.Tests
 		[Test]
 		public void ReadWriteProperties()
 		{
+// ReSharper disable ConvertToConstant.Local
 			int height = 123;
 			int width = 456;
 			int x = 789;
 			int y = 246;
 			string title = "AbCdEfGh!!";
+// ReSharper restore ConvertToConstant.Local
 			WindowHandle handle = new WindowHandle() { Handle = new IntPtr(1234) };
-			Window w = new Window();
-			w.Height = height;
-			w.Width = width;
-			w.X = x;
-			w.Y = y;
-			w.Title = title;
-			w.Handle = handle;
+			Window w = new Window {Height = height, Width = width, X = x, Y = y, Title = title, Handle = handle};
 			Assert.AreEqual(w.Height, height);
 			Assert.AreEqual(w.Width, width);
 			Assert.AreEqual(w.X, x);
@@ -83,8 +76,8 @@ namespace WindowEntity.Tests
 			Process obstacle = WindowsMan.RunProcess(Definitions.PathToSampleApp);
 			Assert.NotNull(obstacle);
 			pProcessesToClean.Add(obstacle);
-			Window obstacle_window = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
-			Assert.NotNull(obstacle_window);
+			Window obstacleWindow = WindowsMan.WaitAndAttachTo("SampleWindow", 1, 1, 5);
+			Assert.NotNull(obstacleWindow);
 			// click first
 			w.Click(MouseActions.LeftClick,
 				new Coordinate(CoordinateType.Relative, new Point() { X = 100, Y = 200 }));
@@ -93,12 +86,12 @@ namespace WindowEntity.Tests
 			Assert.NotNull(w);
 			Assert.AreEqual(w.Title, "RED clicked");
 			// click second
-			obstacle_window.Click(MouseActions.LeftClick,
+			obstacleWindow.Click(MouseActions.LeftClick,
 				new Coordinate(CoordinateType.Relative, new Point() { X = 100, Y = 200 }));
 			Window.WaitGlobal(100);
-			obstacle_window = WindowsMan.UpdateWindow(obstacle_window);
-			Assert.NotNull(obstacle_window);
-			Assert.AreEqual(obstacle_window.Title, "RED clicked");
+			obstacleWindow = WindowsMan.UpdateWindow(obstacleWindow);
+			Assert.NotNull(obstacleWindow);
+			Assert.AreEqual(obstacleWindow.Title, "RED clicked");
 			// clean
 			p.Kill();
 			obstacle.Kill();
@@ -418,12 +411,12 @@ namespace WindowEntity.Tests
 			using(Bitmap bmp = w.Screenshot())
 			{
 				Assert.NotNull(bmp);
-				Assert.True(w.CompareImagesExactly(bmp, bmp));
+				Assert.True(Window.CompareImagesExactly(bmp, bmp));
 				using(Bitmap newbmp = new Bitmap(bmp))
 				{
 					Assert.NotNull(newbmp);
 					newbmp.SetPixel(0, 0, Color.Magenta);
-					Assert.False(w.CompareImagesExactly(bmp, newbmp));
+					Assert.False(Window.CompareImagesExactly(bmp, newbmp));
 				}
 			}
 			w.Close();
@@ -480,7 +473,7 @@ namespace WindowEntity.Tests
 					new Coordinate(CoordinateType.Relative, new Point() { X = 350, Y = 350 })))
 				{
 					Assert.NotNull(fragment);
-					Coordinate found = w.FindImageExactly(bmp, fragment);
+					Coordinate found = Window.FindImageExactly(bmp, fragment);
 					Assert.NotNull(found);
 					Point pt = found.ToRelative(w);
 					Assert.AreEqual(300, pt.X);
@@ -549,15 +542,15 @@ namespace WindowEntity.Tests
 		{
 			if(Globals.x64)
 			{
-				Tesseract_64();
+				Tesseract64();
 			}
 			else
 			{
-				Tesseract_32();
+				Tesseract32();
 			}
 		}
 
-		private void Tesseract_32()
+		private static void Tesseract32()
 		{
 			Ocr32 ocr = new Ocr32();
 			Assert.NotNull(ocr);
@@ -568,13 +561,13 @@ namespace WindowEntity.Tests
 				Assert.NotNull(tessocr);
 				tessocr.Init(null, "eng", false);
 				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save(FileUtils.CombineWinPath(pTempDirectory, Guid.NewGuid().ToString()) + ".bmp");
-				ocr.DoOCRMultiThred(bmp, "eng");
-				List<tessnet2_32::tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
+				ocr.DoOcrMultiThread(bmp, "eng");
+				List<tessnet2_32::tessnet2.Word> words = Ocr32.DoOcrNormal(bmp, "eng");
 				Assert.NotNull(words);
 			}
 		}
 
-		private void Tesseract_64()
+		private static void Tesseract64()
 		{
 			Ocr64 ocr = new Ocr64();
 			Assert.NotNull(ocr);
@@ -585,8 +578,8 @@ namespace WindowEntity.Tests
 				Assert.NotNull(tessocr);
 				tessocr.Init(null, "eng", false);
 				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save(FileUtils.CombineWinPath(pTempDirectory, Guid.NewGuid().ToString()) + ".bmp");
-				ocr.DoOCRMultiThred(bmp, "eng");
-				List<tessnet2_64::tessnet2.Word> words = ocr.DoOCRNormal(bmp, "eng");
+				ocr.DoOcrMultiThread(bmp, "eng");
+				List<tessnet2_64::tessnet2.Word> words = Ocr64.DoOcrNormal(bmp, "eng");
 				Assert.NotNull(words);
 			}
 		}

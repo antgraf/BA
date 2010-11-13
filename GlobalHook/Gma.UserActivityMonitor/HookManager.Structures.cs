@@ -1,16 +1,19 @@
 using System.Runtime.InteropServices;
 
-namespace Gma.UserActivityMonitor {
+namespace Gma.UserActivityMonitor
+{
 
-    public static partial class HookManager {
+    public static partial class HookManager
+	{
         /// <summary>
-        /// The Point structure defines the X- and Y- coordinates of a point. 
+        /// The MousePoint structure defines the X- and Y- coordinates of a point. 
         /// </summary>
         /// <remarks>
         /// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/gdi/rectangl_0tiq.asp
         /// </remarks>
         [StructLayout(LayoutKind.Sequential)]
-        private struct Point {
+        private struct Point
+		{
             /// <summary>
             /// Specifies the X-coordinate of the point. 
             /// </summary>
@@ -25,11 +28,12 @@ namespace Gma.UserActivityMonitor {
         /// The MSLLHOOKSTRUCT structure contains information about a low-level keyboard input event. 
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct MouseLLHookStruct {
+        private struct MouseLLHookStruct
+		{
             /// <summary>
-            /// Specifies a Point structure that contains the X- and Y-coordinates of the cursor, in screen coordinates. 
+            /// Specifies a MousePoint structure that contains the X- and Y-coordinates of the cursor, in screen coordinates. 
             /// </summary>
-            public Point Point;
+            public Point MousePoint;
             /// <summary>
             /// If the message is WM_MOUSEWHEEL, the high-order word of this member is the wheel delta. 
             /// The low-order word is reserved. A positive value indicates that the wheel was rotated forward, 

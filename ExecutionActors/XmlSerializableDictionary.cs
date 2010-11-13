@@ -1,4 +1,3 @@
-using System;
 using System.Xml.Serialization;
 using System.Xml;
 
@@ -30,14 +29,14 @@ namespace ExecutionActors
 		/// Generates an object from its XML representation.
 		/// </summary>
 		/// <param name="reader">The <see cref="XmlReader"/> stream from which the object is deserialized.</param>
-		public void ReadXml(System.Xml.XmlReader reader)
+		public void ReadXml(XmlReader reader)
 		{
 			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
 			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
 			bool wasEmpty = reader.IsEmptyElement;
 			reader.Read();
 			if(wasEmpty) return;
-			while(reader.NodeType != System.Xml.XmlNodeType.EndElement)
+			while(reader.NodeType != XmlNodeType.EndElement)
 			{
 				reader.ReadStartElement("item");
 				reader.ReadStartElement("key");
@@ -46,7 +45,7 @@ namespace ExecutionActors
 				reader.ReadStartElement("value");
 				TValue value = (TValue)valueSerializer.Deserialize(reader);
 				reader.ReadEndElement();
-				this.Add(key, value);
+				Add(key, value);
 				reader.ReadEndElement();
 				reader.MoveToContent();
 			}
@@ -57,11 +56,11 @@ namespace ExecutionActors
 		/// Converts an object into its XML representation.
 		/// </summary>
 		/// <param name="writer">The <see cref="XmlWriter"/> stream to which the object is serialized.</param>
-		public void WriteXml(System.Xml.XmlWriter writer)
+		public void WriteXml(XmlWriter writer)
 		{
 			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
 			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
-			foreach(TKey key in this.Keys)
+			foreach(TKey key in Keys)
 			{
 				writer.WriteStartElement("item");
 				writer.WriteStartElement("key");
@@ -82,12 +81,12 @@ namespace ExecutionActors
 	/// </summary>
 	public class DictionaryXmlSerializer : IXmlSerializable
 	{
-		private const string NS = "http://www.develop.com/xml/serialization";
+		private const string ns = "http://www.develop.com/xml/serialization";
 
 		/// <summary>
 		/// Dictionary collection to serialize.
 		/// </summary>
-		public System.Collections.IDictionary Dictionary;
+		public readonly System.Collections.IDictionary Dictionary;
 
 		/// <summary>
 		/// Default constructor. Initializes <see cref="Dictionary"/> member with a new <see cref="System.Collections.Hashtable"/>.
@@ -112,13 +111,13 @@ namespace ExecutionActors
 		/// <param name="writer">The <see cref="XmlWriter"/> stream to which the object is serialized.</param>
 		public void WriteXml(XmlWriter writer)
 		{
-			writer.WriteStartElement("dictionary", NS);
+			writer.WriteStartElement("dictionary", ns);
 			foreach(object key in Dictionary.Keys)
 			{
 				object value = Dictionary[key];
-				writer.WriteStartElement("item", NS);
-				writer.WriteElementString("key", NS, key.ToString());
-				writer.WriteElementString("value", NS, value.ToString());
+				writer.WriteStartElement("item", ns);
+				writer.WriteElementString("key", ns, key.ToString());
+				writer.WriteElementString("value", ns, value.ToString());
 				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
@@ -134,9 +133,9 @@ namespace ExecutionActors
 			reader.ReadStartElement("dictionary");
 			while(reader.NodeType != XmlNodeType.EndElement)
 			{
-				reader.ReadStartElement("item", NS);
-				string key = reader.ReadElementString("key", NS);
-				string value = reader.ReadElementString("value", NS);
+				reader.ReadStartElement("item", ns);
+				string key = reader.ReadElementString("key", ns);
+				string value = reader.ReadElementString("value", ns);
 				reader.ReadEndElement();
 				reader.MoveToContent();
 				Dictionary.Add(key, value);

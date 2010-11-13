@@ -5,7 +5,8 @@ namespace Gma.UserActivityMonitor
 {
     public static partial class HookManager
     {
-        #region Windows constants
+// ReSharper disable InconsistentNaming
+		#region Windows constants
 
         //values from Winuser.h in Microsoft SDK.
         /// <summary>
@@ -306,5 +307,6 @@ namespace Gma.UserActivityMonitor
         private static extern short GetKeyState(int vKey);
 
         #endregion
-    }
+// ReSharper restore InconsistentNaming
+	}
 }

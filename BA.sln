@@ -1,6 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2139DE52-59C1-4B74-84AD-2688F2755C3D}"
+	ProjectSection(SolutionItems) = preProject
+		KeyCodes.txt = KeyCodes.txt
+		README = README
+		ThanksTo.txt = ThanksTo.txt
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowEntity", "WindowEntity\WindowEntity.csproj", "{EF9C5E85-679B-4767-ACB2-D81B38026DDA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3549CD6F-80F8-450F-B99E-CF0A736B1F2A} = {3549CD6F-80F8-450F-B99E-CF0A736B1F2A}
@@ -10,13 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWindow", "SampleWindow\SampleWindow.csproj", "{F61F6EBE-853A-4093-84F3-E44A00A95D29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputSimulator", "InputSimulator\InputSimulator.csproj", "{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2139DE52-59C1-4B74-84AD-2688F2755C3D}"
-	ProjectSection(SolutionItems) = preProject
-		KeyCodes.txt = KeyCodes.txt
-		README = README
-		ThanksTo.txt = ThanksTo.txt
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutionActors", "ExecutionActors\ExecutionActors.csproj", "{9BECF6F2-38C4-4DBD-A02E-50E03649A42C}"
 	ProjectSection(ProjectDependencies) = postProject

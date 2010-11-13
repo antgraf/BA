@@ -1,41 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ExecutionActors
+﻿namespace ExecutionActors
 {
-	public class Transition<FROM, TO> : TransitionBase
-		where FROM: State, new()
-		where TO: State, new()
+	public class Transition<TFrom, TTo> : TransitionBase
+		where TFrom: State, new()
+		where TTo: State, new()
 	{
-		public Transition()
-		{}
-
-		public virtual bool CheckConstraints(FROM currentState, int eventId)
+		public virtual bool CheckConstraints(TFrom currentState, int eventId)
 		{
 			return true;
 		}
 
-		public virtual TO CreateNextState()
+		public virtual TTo CreateNextState(object arg = null)
 		{
-			return CreateNextState(null);
-		}
-
-		public virtual TO CreateNextState(object arg)
-		{
-			TO nextState = new TO();
+			TTo nextState = new TTo();
 			nextState.Init(arg);
 			return nextState;
 		}
 
 		public override State Transit(State currentState, int eventId, object arg)
 		{
-			if(!CheckConstraints((FROM)currentState, eventId))
-			{
-				return null;
-			}
-			return CreateNextState(arg);
+			return !CheckConstraints((TFrom)currentState, eventId) ? null : CreateNextState(arg);
 		}
 	}
 }

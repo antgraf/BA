@@ -1,17 +1,19 @@
 using System;
 
+// ReSharper disable CheckNamespace
 namespace BACommon
+// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Data manipulations utility class.
 	/// </summary>
 	public sealed class DataUtils
 	{
-		private const int Int16Length = 2;
-		private const int Int32Length = 4;
-		private const int Int64Length = 8;
-		private const byte ByteMask = 0xFF;
-		private const byte ByteLength = 8;
+		private const int int16Length = 2;
+		private const int int32Length = 4;
+		private const int int64Length = 8;
+		private const byte byteMask = 0xFF;
+		private const byte byteLength = 8;
 
 		/// <summary>
 		/// Check array is null or empty.
@@ -30,7 +32,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(Int16 i)
 		{
-			return AllToBytes(unchecked((UInt64)i), Int16Length);
+			return AllToBytes(unchecked((UInt64)i), int16Length);
 		}
 
 		/// <summary>
@@ -40,7 +42,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(UInt16 i)
 		{
-			return AllToBytes(i, Int16Length);
+			return AllToBytes(i, int16Length);
 		}
 
 		/// <summary>
@@ -50,7 +52,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(Int32 i)
 		{
-			return AllToBytes(unchecked((UInt64)i), Int32Length);
+			return AllToBytes(unchecked((UInt64)i), int32Length);
 		}
 
 		/// <summary>
@@ -60,7 +62,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(UInt32 i)
 		{
-			return AllToBytes(unchecked((UInt64)i), Int32Length);
+			return AllToBytes(unchecked(i), int32Length);
 		}
 
 		/// <summary>
@@ -70,7 +72,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(Int64 i)
 		{
-			return AllToBytes(unchecked((UInt64)i), Int64Length);
+			return AllToBytes(unchecked((UInt64)i), int64Length);
 		}
 
 		/// <summary>
@@ -80,7 +82,7 @@ namespace BACommon
 		/// <returns>Bytes array.</returns>
 		public static byte[] ToBytes(UInt64 i)
 		{
-			return AllToBytes(i, Int64Length);
+			return AllToBytes(i, int64Length);
 		}
 
 		private static byte[] AllToBytes(UInt64 i, int length)
@@ -88,7 +90,7 @@ namespace BACommon
 			byte[] buf = new byte[length];
 			for(int p = 0; p < length; p++)
 			{
-				buf[p] = (byte)(ByteMask & (i >> ((length - p - 1) * ByteLength)));
+				buf[p] = (byte)(byteMask & (i >> ((length - p - 1) * byteLength)));
 			}
 			return buf;
 		}
@@ -105,14 +107,14 @@ namespace BACommon
 			{
 				return 0;
 			}
-			if(bytes.Length > Int64Length)
+			if(bytes.Length > int64Length)
 			{
 				throw new OverflowException("Cannot convert bytes array to integer. Array length is too long.");
 			}
 			UInt64 i = 0;
 			for(int p = 0; p < bytes.Length; p++)
 			{
-				i |= (UInt64)bytes[p] << ((bytes.Length - p - 1) * ByteLength);
+				i |= (UInt64)bytes[p] << ((bytes.Length - p - 1) * byteLength);
 			}
 			return i;
 		}
@@ -125,18 +127,15 @@ namespace BACommon
 		/// <returns>Signed integer.</returns>
 		public static Int64 ToSigned(byte[] bytes)
 		{
-			if(bytes.Length > Int32Length)
+			if(bytes.Length > int32Length)
 			{
 				return unchecked((Int64)ToUnsigned(bytes));
 			}
-			else if(bytes.Length > Int16Length)
+			if(bytes.Length > int16Length)
 			{
 				return unchecked((Int32)ToUnsigned(bytes));
 			}
-			else
-			{
-				return unchecked((Int16)ToUnsigned(bytes));
-			}
+			return unchecked((Int16)ToUnsigned(bytes));
 		}
 	}
 }

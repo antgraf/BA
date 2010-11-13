@@ -27,15 +27,11 @@ namespace Gma.UserActivityMonitor
         internal MouseEventExtArgs(MouseEventArgs e) : base(e.Button, e.Clicks, e.X, e.Y, e.Delta)
         {}
 
-        private bool m_Handled;
-
-        /// <summary>
-        /// Set this property to <b>true</b> inside your event handler to prevent further processing of the event in other applications.
-        /// </summary>
-        public bool Handled
-        {
-            get { return m_Handled; }
-            set { m_Handled = value; }
-        }
+    	/// <summary>
+    	/// Set this property to <b>true</b> inside your event handler to prevent further processing of the event in other applications.
+    	/// </summary>
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+    	public bool Handled { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
     }
 }

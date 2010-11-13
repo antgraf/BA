@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
@@ -8,7 +7,6 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Tesseract;
 
 namespace WindowEntity
 {
@@ -18,18 +16,6 @@ namespace WindowEntity
 
 		public static bool operator ==(WindowHandle a, WindowHandle b)
 		{
-			// If both are null, or both are same instance, return true.
-			if(System.Object.ReferenceEquals(a, b))
-			{
-				return true;
-			}
-
-			// If one is null, but not both, return false.
-			if(((object)a == null) || ((object)b == null))
-			{
-				return false;
-			}
-
 			// Return true if the fields match:
 			return a.Handle == b.Handle;
 		}
@@ -39,7 +25,7 @@ namespace WindowEntity
 			return !(a == b);
 		}
 
-		public override bool Equals(System.Object obj)
+		public override bool Equals(Object obj)
 		{
 			if(obj == null)
 			{
@@ -86,12 +72,12 @@ namespace WindowEntity
 		public const double NormalizationCoefficientForColorDeviation = 441.6729559300637;
 		public const double MinColorDeviation = 0.0022641187027044;
 
-		private const int MaxTitleLength = 512;
-		private const int DefaultTimerDeviationPercent = 15;
-		private const int DefaultTimerKeyWait = 300;
-		private const int WHEEL_DELTA = 120;
+		private const int maxTitleLength = 512;
+		private const int defaultTimerDeviationPercent = 15;
+		private const int defaultTimerKeyWait = 300;
+		private const int wheelDelta = 120;
 
-		private static Random pRandom = new Random();
+		private static readonly Random pRandom = new Random();
 
 		private double pAllowedColorDeviation = 0.0;
 		private double pAllowedImageNoisePixels = 0.0;
@@ -107,11 +93,11 @@ namespace WindowEntity
 
 		protected virtual bool IsActivationNeeded()
 		{
-			if(this.GetType().IsSubclassOf(typeof(Desktop)) || this.GetType() == typeof(Desktop))
+			if(GetType().IsSubclassOf(typeof(Desktop)) || GetType() == typeof(Desktop))
 			{
 				return false;
 			}
-			return WinAPI.GetForegroundWindow() != pHandle.Handle;
+			return WinApi.GetForegroundWindow() != pHandle.Handle;
 		}
 
 		protected virtual bool ActivateIfNeeded()
@@ -119,7 +105,7 @@ namespace WindowEntity
 			bool needed = IsActivationNeeded();
 			if(needed)
 			{
-				WinAPI.SetForegroundWindow(pHandle.Handle);
+				WinApi.SetForegroundWindow(pHandle.Handle);
 				Wait(100);
 			}
 			return needed;
@@ -132,19 +118,19 @@ namespace WindowEntity
 				return color1.ToArgb() == color2.ToArgb();
 			}
 
-			int diffr = Math.Abs((int)color1.R - (int)color2.R);
-			int diffg = Math.Abs((int)color1.G - (int)color2.G);
-			int diffb = Math.Abs((int)color1.B - (int)color2.B);
+			int diffr = Math.Abs(color1.R - color2.R);
+			int diffg = Math.Abs(color1.G - color2.G);
+			int diffb = Math.Abs(color1.B - color2.B);
 			double diff = Math.Sqrt(diffr * diffr + diffg * diffg + diffb * diffb) / Math.Sqrt(255 * 255 * 3);
 			return diff <= pAllowedColorDeviation;
 		}
 
 		public static Window GetWindowAtCursor()
 		{
-			POINT pt = new POINT(Cursor.Position.X, Cursor.Position.Y);
-			IntPtr hWnd = WinAPI.WindowFromPoint(pt);
-			IntPtr parent = WinAPI.GetAncestor(hWnd, GetAncestor_Flags.GetRoot);
-			return Window.FromHandle(parent);
+			WindowPoint pt = new WindowPoint(Cursor.Position.X, Cursor.Position.Y);
+			IntPtr hWnd = WinApi.WindowFromPoint(pt);
+			IntPtr parent = WinApi.GetAncestor(hWnd, GetAncestorFlags.GetRoot);
+			return FromHandle(parent);
 		}
 
 		protected double Radius(Coordinate center, Coordinate radiusPoint)
@@ -156,7 +142,7 @@ namespace WindowEntity
 			return Math.Sqrt(diffx * diffx + diffy * diffy);
 		}
 
-		protected bool IsInRadius(Point point, Point center, double radius)
+		protected static bool IsInRadius(Point point, Point center, double radius)
 		{
 			int diffx = center.X - point.X;
 			int diffy = center.Y - point.Y;
@@ -166,44 +152,37 @@ namespace WindowEntity
 
 		public static Window[] FindWindowsByProcessName(string process)
 		{
-			List<Window> windows = new List<Window>();
 			Process[] procs = Process.GetProcessesByName(process);
-			IntPtr hWnd;
-			foreach(Process proc in procs)
-			{
-				if((hWnd = proc.MainWindowHandle) != IntPtr.Zero)
-				{
-					Window window = FromHandle(hWnd);
-					if(window != null)
-					{
-						windows.Add(window);
-					}
-				}
-			}
-			return windows.ToArray();
+			IntPtr hWnd = IntPtr.Zero;
+			return procs.Where(proc => (hWnd = proc.MainWindowHandle) != IntPtr.Zero)
+				.Select(proc => FromHandle(hWnd))
+				.Where(window => window != null)
+				.ToArray();
 		}
 
 		public static Window FromHandle(IntPtr hwnd)
 		{
 			WindowRect rect = new WindowRect();
-			if(hwnd == IntPtr.Zero || !WinAPI.GetWindowRect(hwnd, ref rect))
+			if(hwnd == IntPtr.Zero || !WinApi.GetWindowRect(hwnd, ref rect))
 			{
 				return null;
 			}
-			Window window = new Window();
-			window.Handle = new WindowHandle() { Handle = hwnd };
-			window.X = rect.X;
-			window.Y = rect.Y;
-			window.Width = rect.Width;
-			window.Height = rect.Height;
-			window.Title = GetTitle(hwnd);
+			Window window = new Window
+			                	{
+			                		Handle = new WindowHandle() {Handle = hwnd},
+			                		X = rect.X,
+			                		Y = rect.Y,
+			                		Width = rect.Width,
+			                		Height = rect.Height,
+			                		Title = GetTitle(hwnd)
+			                	};
 			return window;
 		}
 
 		public static string GetTitle(IntPtr hwnd)
 		{
-			StringBuilder title = new StringBuilder(MaxTitleLength);
-			if(WinAPI.GetWindowText(hwnd, title, MaxTitleLength) == 0)
+			StringBuilder title = new StringBuilder(maxTitleLength);
+			if(WinApi.GetWindowText(hwnd, title, maxTitleLength) == 0)
 			{
 				return null;
 			}
@@ -215,12 +194,7 @@ namespace WindowEntity
 			Thread.Sleep(msec);
 		}
 
-		public static void WaitRandomGlobal(int msec)
-		{
-			WaitRandomGlobal(msec, DefaultTimerDeviationPercent);
-		}
-
-		public static void WaitRandomGlobal(int msec, int percentDelta)
+		public static void WaitRandomGlobal(int msec, int percentDelta = defaultTimerDeviationPercent)
 		{
 			//if(percentDelta >= 100) throw new ArgumentException("Percentage deviation should be < 100%", "percentDelta");
 			int minmsec = (int)(msec - msec * (percentDelta / 100.0));
@@ -241,12 +215,7 @@ namespace WindowEntity
 			Thread.Sleep((int)(msec * pTimeMultiplier));
 		}
 
-		public virtual void WaitRandom(int msec)
-		{
-			WaitRandom(msec, DefaultTimerDeviationPercent);
-		}
-
-		public virtual void WaitRandom(int msec, int percentDelta)
+		public virtual void WaitRandom(int msec, int percentDelta = defaultTimerDeviationPercent)
 		{
 			//if(percentDelta >= 100) throw new ArgumentException("Percentage deviation should be < 100%", "percentDelta");
 			int minmsec = (int)(msec - msec * (percentDelta / 100.0));
@@ -270,37 +239,37 @@ namespace WindowEntity
 		public virtual void Move(Coordinate position)
 		{
 			Point pt = position.ToAbsolute(Desktop.Primary);
-			WinAPI.SetWindowPos(Handle.Handle, IntPtr.Zero, pt.X, pt.Y, 0, 0, WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER);
+			WinApi.SetWindowPos(Handle.Handle, IntPtr.Zero, pt.X, pt.Y, 0, 0, WinApi.SwpNoSize | WinApi.SwpNoZOrder);
 		}
 
 		public virtual void Resize(Coordinate rightBottom)
 		{
 			Point pt = rightBottom.ToAbsolute(Desktop.Primary);
-			WinAPI.SetWindowPos(Handle.Handle, IntPtr.Zero, 0, 0, pt.X, pt.Y, WinAPI.SWP_NOMOVE | WinAPI.SWP_NOZORDER);
+			WinApi.SetWindowPos(Handle.Handle, IntPtr.Zero, 0, 0, pt.X, pt.Y, WinApi.SwpNoMove | WinApi.SwpNoZOrder);
 		}
 
 		public virtual void Minimize()
 		{
-			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
-			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			WindowPlacement wp;
+			WinApi.GetWindowPlacement(Handle.Handle, out wp);
 			wp.ShowCmd = ShowWindowCommand.Minimize;
-			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+			WinApi.SetWindowPlacement(Handle.Handle, ref wp);
 		}
 
 		public virtual void Maximize()
 		{
-			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
-			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			WindowPlacement wp;
+			WinApi.GetWindowPlacement(Handle.Handle, out wp);
 			wp.ShowCmd = ShowWindowCommand.Maximize;
-			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+			WinApi.SetWindowPlacement(Handle.Handle, ref wp);
 		}
 
 		public virtual void Normalize()
 		{
-			WINDOWPLACEMENT wp = WINDOWPLACEMENT.Default;
-			WinAPI.GetWindowPlacement(Handle.Handle, out wp);
+			WindowPlacement wp;
+			WinApi.GetWindowPlacement(Handle.Handle, out wp);
 			wp.ShowCmd = ShowWindowCommand.Normal;
-			WinAPI.SetWindowPlacement(Handle.Handle, ref wp);
+			WinApi.SetWindowPlacement(Handle.Handle, ref wp);
 		}
 
 		#endregion
@@ -331,7 +300,7 @@ namespace WindowEntity
 			ActivateIfNeeded();
 			int x = 0;
 			int y = 0;
-			MouseFlag absflag = MouseFlag.EMPTY;
+			MouseFlag absflag = MouseFlag.Empty;
 			if(moveCursor)
 			{
 				SetCursorPosition(point);
@@ -341,83 +310,83 @@ namespace WindowEntity
 				Point pt = point.ToAbsolute(this);
 				x = pt.X;
 				y = pt.Y;
-				absflag = MouseFlag.ABSOLUTE;
+				absflag = MouseFlag.Absolute;
 			}
 			switch(action)
 			{
 				case MouseActions.LeftClick:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.LEFTDOWN | absflag, MouseFlag.LEFTUP | absflag, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.LeftDown | absflag, MouseFlag.LeftUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.LeftDown:
 				{
-					InputSimulator.SimulateClick(MouseFlag.LEFTDOWN | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.LeftDown | absflag, x, y);
 					break;
 				}
 				case MouseActions.LeftUp:
 				{
-					InputSimulator.SimulateClick(MouseFlag.LEFTUP | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.LeftUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.MiddleClick:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.MIDDLEDOWN | absflag, MouseFlag.MIDDLEUP | absflag, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.MiddleDown | absflag, MouseFlag.MiddleUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.MiddleDown:
 				{
-					InputSimulator.SimulateClick(MouseFlag.MIDDLEDOWN | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.MiddleDown | absflag, x, y);
 					break;
 				}
 				case MouseActions.MiddleUp:
 				{
-					InputSimulator.SimulateClick(MouseFlag.MIDDLEUP | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.MiddleUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.RightClick:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.RIGHTDOWN | absflag, MouseFlag.RIGHTUP | absflag, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.RightDown | absflag, MouseFlag.RightUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.RightDown:
 				{
-					InputSimulator.SimulateClick(MouseFlag.RIGHTDOWN | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.RightDown | absflag, x, y);
 					break;
 				}
 				case MouseActions.RightUp:
 				{
-					InputSimulator.SimulateClick(MouseFlag.RIGHTUP | absflag, x, y);
+					InputSimulator.SimulateClick(MouseFlag.RightUp | absflag, x, y);
 					break;
 				}
 				case MouseActions.X1Click:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 1, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.XDown | absflag, MouseFlag.XUp | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X1Down:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 1, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XDown | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X1Up:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 1, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XUp | absflag, 1, x, y);
 					break;
 				}
 				case MouseActions.X2Click:
 				{
-					InputSimulator.SimulateClickPress(MouseFlag.XDOWN | absflag, MouseFlag.XUP | absflag, 2, x, y);
+					InputSimulator.SimulateClickPress(MouseFlag.XDown | absflag, MouseFlag.XUp | absflag, 2, x, y);
 					break;
 				}
 				case MouseActions.X2Down:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XDOWN | absflag, 2, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XDown | absflag, 2, x, y);
 					break;
 				}
 				case MouseActions.X2Up:
 				{
-					InputSimulator.SimulateClick(MouseFlag.XUP | absflag, 2, x, y);
+					InputSimulator.SimulateClick(MouseFlag.XUp | absflag, 2, x, y);
 					break;
 				}
 				default:
@@ -465,12 +434,12 @@ namespace WindowEntity
 
 		public virtual void WheelUp(int ticks)
 		{
-			InputSimulator.SimulateClick(MouseFlag.WHEEL, ticks * WHEEL_DELTA);
+			InputSimulator.SimulateClick(MouseFlag.Wheel, ticks * wheelDelta);
 		}
 
 		public virtual void WheelDown(int ticks)
 		{
-			InputSimulator.SimulateClick(MouseFlag.WHEEL, ticks * -WHEEL_DELTA);
+			InputSimulator.SimulateClick(MouseFlag.Wheel, ticks * -wheelDelta);
 		}
 
 #endregion
@@ -522,7 +491,7 @@ namespace WindowEntity
 		public virtual void KeySendAndWait(string keys)
 		{
 			KeySend(keys);
-			WaitRandom(DefaultTimerKeyWait);
+			WaitRandom(defaultTimerKeyWait);
 		}
 
 		public virtual void KeySendAndWait(string keys, int msec)
@@ -539,9 +508,9 @@ namespace WindowEntity
 		{
 			ActivateIfNeeded();
 			Point pt = pixel.ToAbsolute(this);
-			IntPtr hdc = WinAPI.GetDC(IntPtr.Zero);
-			uint colorint = WinAPI.GetPixel(hdc, pt.X, pt.Y);
-			WinAPI.ReleaseDC(IntPtr.Zero, hdc);
+			IntPtr hdc = WinApi.GetDC(IntPtr.Zero);
+			uint colorint = WinApi.GetPixel(hdc, pt.X, pt.Y);
+			WinApi.ReleaseDC(IntPtr.Zero, hdc);
 			Color color = Color.FromArgb((int)(colorint & 0x000000FF),
 				(int)(colorint & 0x0000FF00) >> 8,
 				(int)(colorint & 0x00FF0000) >> 16);
@@ -597,9 +566,6 @@ namespace WindowEntity
 			ActivateIfNeeded();
 
 			Point centerpt = center.ToAbsolute(this);
-			Point radiuspt = radiusPoint.ToAbsolute(this);
-			int diffx = centerpt.X - radiuspt.X;
-			int diffy = centerpt.Y - radiuspt.Y;
 			double radius = Radius(center, radiusPoint);
 			int left = (int)(centerpt.X - radius);
 			left = left < 0 ? 0 : left;
@@ -629,12 +595,12 @@ namespace WindowEntity
 			return null;
 		}
 
-		public bool CompareImagesExactly(Bitmap baseline, Bitmap image)
+		public static bool CompareImagesExactly(Bitmap baseline, Bitmap image)
 		{
 			return CompareImagesExactly(baseline, image, null);
 		}
 
-		protected bool CompareImagesExactly(Bitmap baseline, Bitmap image, Point? fragment)
+		protected static bool CompareImagesExactly(Bitmap baseline, Bitmap image, Point? fragment)
 		{
 			if((fragment == null && (baseline.Size.Width != image.Size.Width || baseline.Size.Height != image.Size.Height)) ||
 				(fragment != null && (baseline.Size.Width < image.Size.Width + fragment.Value.X ||
@@ -644,11 +610,9 @@ namespace WindowEntity
 			}
 			int startx = fragment == null ? 0 : fragment.Value.X;
 			int starty = fragment == null ? 0 : fragment.Value.Y;
-			int i = 0; //debug
 			for(int y = 0; y < image.Height; y++)
 				for(int x = 0; x < image.Width; x++)
 				{
-					i++; // debug
 					if(baseline.GetPixel(x + startx, y + starty).ToArgb() != image.GetPixel(x, y).ToArgb())
 					{
 						return false;
@@ -713,7 +677,7 @@ namespace WindowEntity
 			return true;
 		}
 
-		public Coordinate FindImageExactly(Bitmap image, Bitmap fragment)
+		public static Coordinate FindImageExactly(Bitmap image, Bitmap fragment)
 		{
 			if(fragment.Size.Width > image.Size.Width || fragment.Size.Height > image.Size.Height)
 			{
@@ -770,7 +734,7 @@ namespace WindowEntity
 		public OcrWord[] RecognizeText(Coordinate topLeft, Coordinate bottomRight)
 		{
 			ActivateIfNeeded();
-			OcrWord[] ret = null;
+			OcrWord[] ret;
 			using(Bitmap bmp = Screenshot(topLeft, bottomRight))
 			{
 				ret = WindowsMan.RecognizeTextWithZoom(bmp);

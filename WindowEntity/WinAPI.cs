@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -14,17 +12,16 @@ namespace WindowEntity
 		private int _Right;
 		private int _Bottom;
 
-		public WindowRect(System.Drawing.Rectangle Rectangle)
-			: this(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
-		{
-		}
+		public WindowRect(System.Drawing.Rectangle rectangle)
+			: this(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)
+		{}
 
-		public WindowRect(int Left, int Top, int Right, int Bottom)
+		public WindowRect(int left, int top, int right, int bottom)
 		{
-			_Left = Left;
-			_Top = Top;
-			_Right = Right;
-			_Bottom = Bottom;
+			_Left = left;
+			_Top = top;
+			_Right = right;
+			_Bottom = bottom;
 		}
 
 		public int X
@@ -94,24 +91,24 @@ namespace WindowEntity
 			}
 		}
 
-		public static implicit operator System.Drawing.Rectangle(WindowRect Rectangle)
+		public static implicit operator System.Drawing.Rectangle(WindowRect rectangle)
 		{
-			return new System.Drawing.Rectangle(Rectangle.Left, Rectangle.Top, Rectangle.Width, Rectangle.Height);
+			return new System.Drawing.Rectangle(rectangle.Left, rectangle.Top, rectangle.Width, rectangle.Height);
 		}
 
-		public static implicit operator WindowRect(System.Drawing.Rectangle Rectangle)
+		public static implicit operator WindowRect(System.Drawing.Rectangle rectangle)
 		{
-			return new WindowRect(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom);
+			return new WindowRect(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 		}
 
-		public static bool operator ==(WindowRect Rectangle1, WindowRect Rectangle2)
+		public static bool operator ==(WindowRect rectangle1, WindowRect rectangle2)
 		{
-			return Rectangle1.Equals(Rectangle2);
+			return rectangle1.Equals(rectangle2);
 		}
 
-		public static bool operator !=(WindowRect Rectangle1, WindowRect Rectangle2)
+		public static bool operator !=(WindowRect rectangle1, WindowRect rectangle2)
 		{
-			return !Rectangle1.Equals(Rectangle2);
+			return !rectangle1.Equals(rectangle2);
 		}
 
 		public override string ToString()
@@ -119,20 +116,20 @@ namespace WindowEntity
 			return "{Left: " + _Left + "; " + "Top: " + _Top + "; Right: " + _Right + "; Bottom: " + _Bottom + "}";
 		}
 
-		public bool Equals(WindowRect Rectangle)
+		public bool Equals(WindowRect rectangle)
 		{
-			return Rectangle.Left == _Left && Rectangle.Top == _Top && Rectangle.Right == _Right && Rectangle.Bottom == _Bottom;
+			return rectangle.Left == _Left && rectangle.Top == _Top && rectangle.Right == _Right && rectangle.Bottom == _Bottom;
 		}
 
-		public override bool Equals(object Object)
+		public override bool Equals(object @object)
 		{
-			if(Object is WindowRect)
+			if(@object is WindowRect)
 			{
-				return Equals((WindowRect)Object);
+				return Equals((WindowRect)@object);
 			}
-			else if(Object is System.Drawing.Rectangle)
+			if(@object is System.Drawing.Rectangle)
 			{
-				return Equals(new WindowRect((System.Drawing.Rectangle)Object));
+				return Equals(new WindowRect((System.Drawing.Rectangle)@object));
 			}
 
 			return false;
@@ -147,14 +144,14 @@ namespace WindowEntity
 	[Flags]
 	internal enum MouseEventFlags
 	{
-		LEFTDOWN = 0x00000002,
-		LEFTUP = 0x00000004,
-		MIDDLEDOWN = 0x00000020,
-		MIDDLEUP = 0x00000040,
-		MOVE = 0x00000001,
-		ABSOLUTE = 0x00008000,
-		RIGHTDOWN = 0x00000008,
-		RIGHTUP = 0x00000010
+		LeftDown = 0x00000002,
+		LeftUp = 0x00000004,
+		MiddleDown = 0x00000020,
+		MiddleUp = 0x00000040,
+		Move = 0x00000001,
+		Absolute = 0x00008000,
+		RightDown = 0x00000008,
+		RightUp = 0x00000010
 	}
 
     [StructLayout(LayoutKind.Sequential)]
@@ -169,7 +166,7 @@ namespace WindowEntity
     }
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct KEYBDINPUT
+	internal struct KeyboardInput
 	{
 		 public ushort wVk;
 		 public ushort wScan;
@@ -179,7 +176,7 @@ namespace WindowEntity
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct HARDWAREINPUT
+	internal struct HardwareInput
 	{
 		 public int uMsg;
 		 public short wParamL;
@@ -192,26 +189,26 @@ namespace WindowEntity
 		[FieldOffset(0)]
 		public MouseInputData mi;
 		[FieldOffset(0)]
-		public KEYBDINPUT ki;
+		public KeyboardInput ki;
 		[FieldOffset(0)]
-		public HARDWAREINPUT hi;
+		public HardwareInput hi;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct INPUT
+    internal struct Input
     {
 		internal SendInputEventType type;
 		internal MouseKeybdhardwareInputUnion mkhi;
     }
 
-	internal enum SendInputEventType : int
+	internal enum SendInputEventType
 	{
 		InputMouse,
 		InputKeyboard,
 		InputHardware
 	}
 
-	internal enum ShowWindowCommand : int
+	internal enum ShowWindowCommand
 	{
 		Hide = 0,
 		Normal = 1,
@@ -229,47 +226,47 @@ namespace WindowEntity
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct POINT
+	internal struct WindowPoint
 	{
 		public int X;
 		public int Y;
 
-		public POINT(int x, int y)
+		public WindowPoint(int x, int y)
 		{
-			this.X = x;
-			this.Y = y;
+			X = x;
+			Y = y;
 		}
 
-		public static implicit operator System.Drawing.Point(POINT p)
+		public static implicit operator System.Drawing.Point(WindowPoint p)
 		{
 			return new System.Drawing.Point(p.X, p.Y);
 		}
 
-		public static implicit operator POINT(System.Drawing.Point p)
+		public static implicit operator WindowPoint(System.Drawing.Point p)
 		{
-			return new POINT(p.X, p.Y);
+			return new WindowPoint(p.X, p.Y);
 		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct RECT
+	internal struct WindowRectangle
 	{
 		private int _Left;
 		private int _Top;
 		private int _Right;
 		private int _Bottom;
 
-		public RECT(System.Drawing.Rectangle Rectangle)
-			: this(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
+		public WindowRectangle(System.Drawing.Rectangle rectangle)
+			: this(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)
 		{
 		}
 
-		public RECT(int Left, int Top, int Right, int Bottom)
+		public WindowRectangle(int left, int top, int right, int bottom)
 		{
-			_Left = Left;
-			_Top = Top;
-			_Right = Right;
-			_Bottom = Bottom;
+			_Left = left;
+			_Top = top;
+			_Right = right;
+			_Bottom = bottom;
 		}
 
 		public int X
@@ -340,24 +337,24 @@ namespace WindowEntity
 			}
 		}
 
-		public static implicit operator System.Drawing.Rectangle(RECT Rectangle)
+		public static implicit operator System.Drawing.Rectangle(WindowRectangle rectangle)
 		{
-			return new System.Drawing.Rectangle(Rectangle.Left, Rectangle.Top, Rectangle.Width, Rectangle.Height);
+			return new System.Drawing.Rectangle(rectangle.Left, rectangle.Top, rectangle.Width, rectangle.Height);
 		}
 
-		public static implicit operator RECT(System.Drawing.Rectangle Rectangle)
+		public static implicit operator WindowRectangle(System.Drawing.Rectangle rectangle)
 		{
-			return new RECT(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom);
+			return new WindowRectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 		}
 
-		public static bool operator ==(RECT Rectangle1, RECT Rectangle2)
+		public static bool operator ==(WindowRectangle rectangle1, WindowRectangle rectangle2)
 		{
-			return Rectangle1.Equals(Rectangle2);
+			return rectangle1.Equals(rectangle2);
 		}
 
-		public static bool operator !=(RECT Rectangle1, RECT Rectangle2)
+		public static bool operator !=(WindowRectangle rectangle1, WindowRectangle rectangle2)
 		{
-			return !Rectangle1.Equals(Rectangle2);
+			return !rectangle1.Equals(rectangle2);
 		}
 
 		public override string ToString()
@@ -365,20 +362,20 @@ namespace WindowEntity
 			return "{Left: " + _Left + "; " + "Top: " + _Top + "; Right: " + _Right + "; Bottom: " + _Bottom + "}";
 		}
 
-		public bool Equals(RECT Rectangle)
+		public bool Equals(WindowRectangle rectangle)
 		{
-			return Rectangle.Left == _Left && Rectangle.Top == _Top && Rectangle.Right == _Right && Rectangle.Bottom == _Bottom;
+			return rectangle.Left == _Left && rectangle.Top == _Top && rectangle.Right == _Right && rectangle.Bottom == _Bottom;
 		}
 
-		public override bool Equals(object Object)
+		public override bool Equals(object @object)
 		{
-			if(Object is RECT)
+			if(@object is WindowRectangle)
 			{
-				return Equals((RECT)Object);
+				return Equals((WindowRectangle)@object);
 			}
-			else if(Object is System.Drawing.Rectangle)
+			if(@object is System.Drawing.Rectangle)
 			{
-				return Equals(new RECT((System.Drawing.Rectangle)Object));
+				return Equals(new WindowRectangle((System.Drawing.Rectangle)@object));
 			}
 
 			return false;
@@ -392,20 +389,20 @@ namespace WindowEntity
 
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct WINDOWPLACEMENT
+	internal struct WindowPlacement
 	{
 		public int Length;
 		public int Flags;
 		public ShowWindowCommand ShowCmd;
-		public POINT MinPosition;
-		public POINT MaxPosition;
-		public RECT NormalPosition;
+		public WindowPoint MinPosition;
+		public WindowPoint MaxPosition;
+		public WindowRectangle NormalPosition;
 
-		public static WINDOWPLACEMENT Default
+		public static WindowPlacement Default
 		{
 			get
 			{
-				WINDOWPLACEMENT result = new WINDOWPLACEMENT();
+				WindowPlacement result = new WindowPlacement();
 				result.Length = Marshal.SizeOf(result);
 				return result;
 			}
@@ -415,45 +412,45 @@ namespace WindowEntity
 	[Flags]
 	internal enum WindowFromPointFlags
 	{
-		CWP_ALL = 0x0000,
-		CWP_SKIPINVISIBLE = 0x0001,
-		CWP_SKIPDISABLED = 0x0002,
-		CWP_SKIPTRANSPARENT = 0x0003
+		CwpAll = 0x0000,
+		CwpSkipInvisible = 0x0001,
+		CwpSkipDisabled = 0x0002,
+		CwpSkipTransparent = 0x0003
 	}
 
-	internal enum GetAncestor_Flags
+	internal enum GetAncestorFlags
 	{
 		GetParent = 1,
 		GetRoot = 2,
 		GetRootOwner = 3
 	}
 
-	internal sealed class WinAPI
+	internal sealed class WinApi
 	{
 
-		internal static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-		internal const UInt32 SWP_NOSIZE = 0x0001;
-		internal const UInt32 SWP_NOMOVE = 0x0002;
-		internal const UInt32 SWP_NOZORDER = 0x0004;
-		internal const UInt32 SWP_SHOWWINDOW = 0x0040;
+		internal static readonly IntPtr HwndTopmost = new IntPtr(-1);
+		internal const UInt32 SwpNoSize = 0x0001;
+		internal const UInt32 SwpNoMove = 0x0002;
+		internal const UInt32 SwpNoZOrder = 0x0004;
+		internal const UInt32 SwpShowWindow = 0x0040;
 
-		internal const int MOUSEEVENTF_LEFTDOWN = 0x02;
-		internal const int MOUSEEVENTF_LEFTUP = 0x04;
-		internal const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-		internal const int MOUSEEVENTF_RIGHTUP = 0x10;
+		internal const int MouseEventfLeftDown = 0x02;
+		internal const int MouseEventfLeftUp = 0x04;
+		internal const int MouseEventfRightDown = 0x08;
+		internal const int MouseEventfRightUp = 0x10;
 
-		internal const UInt32 SW_HIDE = 0;
-		internal const UInt32 SW_SHOWNORMAL = 1;
-		internal const UInt32 SW_NORMAL = 1;
-		internal const UInt32 SW_SHOWMINIMIZED = 2;
-		internal const UInt32 SW_SHOWMAXIMIZED = 3;
-		internal const UInt32 SW_MAXIMIZE = 3;
-		internal const UInt32 SW_SHOWNOACTIVATE = 4;
-		internal const UInt32 SW_SHOW = 5;
-		internal const UInt32 SW_MINIMIZE = 6;
-		internal const UInt32 SW_SHOWMINNOACTIVE = 7;
-		internal const UInt32 SW_SHOWNA = 8;
-		internal const UInt32 SW_RESTORE = 9;
+		internal const UInt32 SwHide = 0;
+		internal const UInt32 SwShowNormal = 1;
+		internal const UInt32 SwNormal = 1;
+		internal const UInt32 SwShowMinimized = 2;
+		internal const UInt32 SwShowMaximized = 3;
+		internal const UInt32 SwMaximize = 3;
+		internal const UInt32 SwShowNoActivate = 4;
+		internal const UInt32 SwShow = 5;
+		internal const UInt32 SwMinimize = 6;
+		internal const UInt32 SwShowMinNoActive = 7;
+		internal const UInt32 SwShowNA = 8;
+		internal const UInt32 SwRestore = 9;
 
 		internal delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
@@ -470,10 +467,10 @@ namespace WindowEntity
 		internal static extern bool GetWindowRect(IntPtr hWnd, ref WindowRect rect);
 
 		[DllImport("coredll")]
-		internal static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+		internal static extern int SendMessage(IntPtr hWnd, uint msg, int wParam, int lParam);
 
 		[DllImport("user32.dll")]
-		internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+		internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 		// Call this way:
 		//SetWindowPos(theWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
@@ -488,18 +485,18 @@ namespace WindowEntity
 		internal static extern void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo);
 
 		[DllImport("user32.dll", SetLastError = true)]
-		internal static extern uint SendInput(uint nInputs, ref INPUT pInputs, int cbSize);
+		internal static extern uint SendInput(uint nInputs, ref Input pInputs, int cbSize);
 
 		[DllImport("user32.dll")]
 		internal static extern IntPtr GetMessageExtraInfo();
 
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		internal static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WINDOWPLACEMENT lpwndpl);
+		internal static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowPlacement lpwndpl);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		internal static extern bool GetWindowPlacement(IntPtr hWnd, out WINDOWPLACEMENT lpwndpl);
+		internal static extern bool GetWindowPlacement(IntPtr hWnd, out WindowPlacement lpwndpl);
 
 		[DllImport("user32.dll")]
 		internal static extern IntPtr GetDC(IntPtr hwnd);
@@ -511,12 +508,12 @@ namespace WindowEntity
 		internal static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
 
 		[DllImport("user32.dll")]
-		internal static extern IntPtr WindowFromPoint(POINT Point);
+		internal static extern IntPtr WindowFromPoint(WindowPoint windowPoint);
 
 		[DllImport("user32.dll")]
-		internal static extern IntPtr ChildWindowFromPointEx(IntPtr hWndParent, POINT pt, uint uFlags);
+		internal static extern IntPtr ChildWindowFromPointEx(IntPtr hWndParent, WindowPoint pt, uint uFlags);
 
 		[DllImport("user32.dll", ExactSpelling = true)]
-		internal static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestor_Flags gaFlags);
+		internal static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestorFlags gaFlags);
 	}
 }

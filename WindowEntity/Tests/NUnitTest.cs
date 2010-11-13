@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace WindowEntity.Tests
 {
@@ -12,7 +8,7 @@ namespace WindowEntity.Tests
 		[Test]
 		public void Ok()
 		{
-			int a = 12;	// magic number
+			const int a = 12;
 			Assert.AreEqual(a, 12);
 		}
 

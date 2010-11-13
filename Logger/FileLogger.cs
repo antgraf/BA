@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using BACommon;
 
@@ -19,37 +16,26 @@ namespace Logger
 
 		public FileLogger()
 		{
-			string filename = Guid.NewGuid().ToString() + pLogExtension;
+			string filename = Guid.NewGuid() + pLogExtension;
 			Create(filename, true);
 		}
 
-		public FileLogger(string filename)
-			: this(filename, false)
-		{}
-
-		public FileLogger(string filename, bool local)
+		public FileLogger(string filename, bool local = false)
 		{
 			Create(filename, local);
 		}
 
 		protected void Create(string filename, bool local)
 		{
-			if(local)
-			{
-				pFileName = FileUtils.Relative2AbsolutePath(FileUtils.CombineWinPath(pLogFolder, filename));
-			}
-			else
-			{
-				pFileName = filename;
-			}
+			pFileName = local ? FileUtils.Relative2AbsolutePath(FileUtils.CombineWinPath(pLogFolder, filename)) : filename;
 			pLog = File.CreateText(pFileName);
 		}
 
-		public void Log(string msg, bool timestamp)
+		public void Log(string msg, bool timestamp = true)
 		{
 			if(timestamp)
 			{
-				msg = string.Format(pLogMessageFormat, DateTime.Now.ToString(), msg);
+				msg = string.Format(pLogMessageFormat, DateTime.Now, msg);
 			}
 			lock(pLog)
 			{
@@ -58,20 +44,10 @@ namespace Logger
 			}
 		}
 
-		public void Log(string source, string msg, bool timestamp)
+		public void Log(string source, string msg, bool timestamp = true)
 		{
 			msg = string.Format(pLogSourceFormat, source, msg);
 			Log(msg, timestamp);
-		}
-
-		public void Log(string msg)
-		{
-			Log(msg, true);
-		}
-
-		public void Log(string source, string msg)
-		{
-			Log(source, msg, true);
 		}
 
 		public void Flush()

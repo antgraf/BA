@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Timers;
 using Gma.UserActivityMonitor;
 using System.Windows.Forms;
@@ -11,17 +9,19 @@ namespace ExecutionActors
 	public class CounterTimer : System.Timers.Timer
 	{
 		private int pCounter = 1;
-		private TimerCallback pCallback = null;
 
 		public delegate void TimerCallback();
 
 		public CounterTimer()
-			: base()
-		{}
+		{
+			Callback = null;
+		}
 
 		public CounterTimer(double interval)
 			: base(interval)
-		{}
+		{
+			Callback = null;
+		}
 
 		public int Counter
 		{
@@ -29,27 +29,23 @@ namespace ExecutionActors
 			set { pCounter = value; }
 		}
 
-		public TimerCallback Callback
-		{
-			get { return pCallback; }
-			set { pCallback = value; }
-		}
+		public TimerCallback Callback { get; set; }
 	}
 
 	public static class ActorsMan
 	{
 		private const int pDefaultCounter = 1;
 
-		private static List<Actor> pActors = new List<Actor>();
-		private static List<CounterTimer> pTimers = new List<CounterTimer>();
+		private static readonly List<Actor> pActors = new List<Actor>();
+		private static readonly List<CounterTimer> pTimers = new List<CounterTimer>();
 		private static bool pPaused = false;
 
 		static ActorsMan()
 		{
-			HookManager.KeyDown += new KeyEventHandler(HookManager_KeyDown);
+			HookManager.KeyDown += HookManagerKeyDown;
 		}
 
-		public static void HookManager_KeyDown(object sender, KeyEventArgs e)
+		public static void HookManagerKeyDown(object sender, KeyEventArgs e)
 		{
 			switch(e.KeyCode)
 			{
@@ -96,15 +92,10 @@ namespace ExecutionActors
 			return actor;
 		}
 
-		public static CounterTimer CreateTimer(CounterTimer.TimerCallback callback, int msec)
-		{
-			return CreateTimer(callback, msec, pDefaultCounter);
-		}
-
-		public static CounterTimer CreateTimer(CounterTimer.TimerCallback callback, int msec, int count)
+		public static CounterTimer CreateTimer(CounterTimer.TimerCallback callback, int msec, int count = pDefaultCounter)
 		{
 			CounterTimer timer = new CounterTimer(msec);
-			timer.Elapsed += new ElapsedEventHandler(TimeEvent);
+			timer.Elapsed += TimeEvent;
 			timer.Counter = count;
 			timer.Callback = callback;
 			pTimers.Add(timer);

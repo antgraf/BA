@@ -1,15 +1,18 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
+// ReSharper disable CheckNamespace
 namespace BACommon
+// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Utility class for file I/O manipulations.
 	/// </summary>
-	public sealed class FileUtils
+	public static class FileUtils
 	{
 		/// <summary>
 		/// Forward slash symbol.
@@ -65,19 +68,12 @@ namespace BACommon
 		/// <returns></returns>
 		public static long DirSize(DirectoryInfo dirinfo)
 		{
-			long size = 0;
 			// Add file sizes.
 			FileInfo[] fis = dirinfo.GetFiles();
-			foreach(FileInfo fi in fis)
-			{
-				size += fi.Length;
-			}
+			long size = fis.Sum(fi => fi.Length);
 			// Add subdirectory sizes.
 			DirectoryInfo[] dis = dirinfo.GetDirectories();
-			foreach(DirectoryInfo di in dis)
-			{
-				size += DirSize(di);
-			}
+			size += dis.Sum(di => DirSize(di));
 			return size;
 		}
 
@@ -95,7 +91,8 @@ namespace BACommon
 				}
 				Directory.CreateDirectory(path);
 			}
-			catch(Exception)
+// ReSharper disable EmptyGeneralCatchClause
+			catch
 			{
 				// ignore
 			}
@@ -106,21 +103,10 @@ namespace BACommon
 		/// </summary>
 		/// <param name="sourcePath">Path to source file or folder.</param>
 		/// <param name="destinationPath">Path to destination folder.</param>
-		/// <remarks>Function cleans destination before copying and ignore any errors during process.</remarks>
-		public static void Copy(string sourcePath, string destinationPath)
-		{
-			Copy(sourcePath, destinationPath, true, true, true);
-		}
-
-		/// <summary>
-		/// Copy file or folder from <paramref name="sourcePath"/> to <paramref name="destinationPath"/> recursively.
-		/// </summary>
-		/// <param name="sourcePath">Path to source file or folder.</param>
-		/// <param name="destinationPath">Path to destination folder.</param>
 		/// <param name="recursive">Copy folders recursively flag.</param>
 		/// <param name="cleanDestination">Clean destination folder before copying flag.</param>
 		/// <param name="ignoreErrors">Ignore errors flag.</param>
-		public static void Copy(string sourcePath, string destinationPath, bool recursive, bool cleanDestination, bool ignoreErrors)
+		public static void Copy(string sourcePath, string destinationPath, bool recursive = true, bool cleanDestination = true, bool ignoreErrors = true)
 		{
 			try
 			{
@@ -138,7 +124,7 @@ namespace BACommon
 				if(finfo.Exists)
 				{
 					isfile = true;
-					files = new string[] { sourcePath };
+					files = new[] { sourcePath };
 				}
 				else
 				{
@@ -150,10 +136,10 @@ namespace BACommon
 					{
 						File.Copy(file, CombinePath(destinationPath, ExtractFileName(file)), true);
 					}
-					catch(Exception e)
+					catch(Exception)
 					{
 						// TODO: add logging
-						if(!ignoreErrors) throw e;
+						if(!ignoreErrors) throw;
 					}
 				}
 				if(recursive && !isfile)
@@ -166,11 +152,13 @@ namespace BACommon
 					}
 				}
 			}
-			catch(Exception e)
+// ReSharper disable RedundantCatchClause
+			catch(Exception)
 			{
 				// TODO: add logging
-				throw e;
+				throw;
 			}
+// ReSharper restore RedundantCatchClause
 		}
 
 		/// <summary>
@@ -233,19 +221,10 @@ namespace BACommon
 		/// <returns>Part of file path after last slash.</returns>
 		public static string ExtractFileName(string path)
 		{
-			string target;
 			int index = path.LastIndexOf(Slash);
 			int index2 = path.LastIndexOf(BackSlash);
 			index = index > index2 ? index : index2;
-			if(index >= 0)
-			{
-				target = path.Substring(index + 1);
-			}
-			else
-			{
-				target = path;
-			}
-			return target;
+			return index >= 0 ? path.Substring(index + 1) : path;
 		}
 
 		/// <summary>
@@ -313,11 +292,7 @@ namespace BACommon
 			}
 			root = root.Replace(BackSlash, Slash).TrimEnd(Slash).Replace("//", "/");
 			fullPath = fullPath.Replace(BackSlash, Slash).TrimEnd(Slash).Replace("//", "/");
-			if(!fullPath.StartsWith(root))
-			{
-				return null;
-			}
-			return fullPath.Substring(root.Length, fullPath.Length - root.Length).TrimStart(Slash, BackSlash);
+			return !fullPath.StartsWith(root) ? null : fullPath.Substring(root.Length, fullPath.Length - root.Length).TrimStart(Slash, BackSlash);
 		}
 
 		/// <summary>

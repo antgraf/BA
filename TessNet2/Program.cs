@@ -3,28 +3,31 @@ extern alias tessnet2_64;
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Threading;
 using BACommon;
 
+// ReSharper disable CheckNamespace
 namespace Tesseract
+// ReSharper restore CheckNamespace
 {
     class Program
     {
-        static void Main(string[] args)
+// ReSharper disable UnusedMember.Local
+        static void Main()
+// ReSharper restore UnusedMember.Local
         {
 			if(Globals.x64)
 			{
-				Main_64(args);
+				Main64();
 			}
 			else
 			{
-				Main_32(args);
+				Main32();
 			}
         }
 
-		static void Main_32(string[] args)
+		static void Main32()
 		{
 			// Code usage sample
 			Ocr32 ocr = new Ocr32();
@@ -32,16 +35,16 @@ namespace Tesseract
 			{
 				tessnet2_32::tessnet2.Tesseract tessocr = new tessnet2_32::tessnet2.Tesseract();
 				tessocr.Init(null, "eng", false);
-				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save("c:\\temp\\" + Guid.NewGuid().ToString() + ".bmp");
+				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save("c:\\temp\\" + Guid.NewGuid() + ".bmp");
 				// Tessdata directory must be in the directory than this exe
 				Console.WriteLine("Multithread version");
-				ocr.DoOCRMultiThred(bmp, "eng");
+				ocr.DoOcrMultiThread(bmp, "eng");
 				Console.WriteLine("Normal version");
-				ocr.DoOCRNormal(bmp, "eng");
+				Ocr32.DoOcrNormal(bmp, "eng");
 			}
 		}
 
-		static void Main_64(string[] args)
+		static void Main64()
 		{
 			// Code usage sample
 			Ocr64 ocr = new Ocr64();
@@ -49,12 +52,12 @@ namespace Tesseract
 			{
 				tessnet2_64::tessnet2.Tesseract tessocr = new tessnet2_64::tessnet2.Tesseract();
 				tessocr.Init(null, "eng", false);
-				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save("c:\\temp\\" + Guid.NewGuid().ToString() + ".bmp");
+				tessocr.GetThresholdedImage(bmp, Rectangle.Empty).Save("c:\\temp\\" + Guid.NewGuid() + ".bmp");
 				// Tessdata directory must be in the directory than this exe
 				Console.WriteLine("Multithread version");
-				ocr.DoOCRMultiThred(bmp, "eng");
+				ocr.DoOcrMultiThread(bmp, "eng");
 				Console.WriteLine("Normal version");
-				ocr.DoOCRNormal(bmp, "eng");
+				Ocr64.DoOcrNormal(bmp, "eng");
 			}
 		}
 	}
@@ -65,13 +68,13 @@ namespace Tesseract
 
     public class Ocr32 : Ocr
     {
-		public void DumpResult(List<tessnet2_32::tessnet2.Word> result)
+		public static void DumpResult(List<tessnet2_32::tessnet2.Word> result)
         {
 			foreach(tessnet2_32::tessnet2.Word word in result)
                 Console.WriteLine("{0} : {1}", word.Confidence, word.Text);
         }
 
-		public List<tessnet2_32::tessnet2.Word> DoOCRNormal(Bitmap image, string lang)
+		public static List<tessnet2_32::tessnet2.Word> DoOcrNormal(Bitmap image, string lang)
         {
 			tessnet2_32::tessnet2.Tesseract ocr = new tessnet2_32::tessnet2.Tesseract();
             ocr.Init(null, lang, false);
@@ -80,29 +83,31 @@ namespace Tesseract
             return result;
         }
 
-        ManualResetEvent m_event;
+        ManualResetEvent mEvent;
 
-        public void DoOCRMultiThred(Bitmap image, string lang)
+        public void DoOcrMultiThread(Bitmap image, string lang)
         {
 			tessnet2_32::tessnet2.Tesseract ocr = new tessnet2_32::tessnet2.Tesseract();
             ocr.Init(null, lang, false);
             // If the OcrDone delegate is not null then this'll be the multithreaded version
 			ocr.OcrDone = new tessnet2_32::tessnet2.Tesseract.OcrDoneHandler(Finished);
             // For event to work, must use the multithreaded version
-			ocr.ProgressEvent += new tessnet2_32::tessnet2.Tesseract.ProgressHandler(ocr_ProgressEvent);
-            m_event = new ManualResetEvent(false);
+// ReSharper disable RedundantDelegateCreation
+			ocr.ProgressEvent += new tessnet2_32::tessnet2.Tesseract.ProgressHandler(OcrProgressEvent);
+// ReSharper restore RedundantDelegateCreation
+            mEvent = new ManualResetEvent(false);
             ocr.DoOCR(image, Rectangle.Empty);
             // Wait here it's finished
-            m_event.WaitOne();
+            mEvent.WaitOne();
         }
 
 		public void Finished(List<tessnet2_32::tessnet2.Word> result)
         {
             DumpResult(result);
-            m_event.Set();
+            mEvent.Set();
         }
 
-        void  ocr_ProgressEvent(int percent)
+    	static void  OcrProgressEvent(int percent)
         {
  	        Console.WriteLine("{0}% progression", percent);
         }
@@ -110,13 +115,13 @@ namespace Tesseract
 
 	public class Ocr64 : Ocr
 	{
-		public void DumpResult(List<tessnet2_64::tessnet2.Word> result)
+		public static void DumpResult(List<tessnet2_64::tessnet2.Word> result)
 		{
 			foreach(tessnet2_64::tessnet2.Word word in result)
 				Console.WriteLine("{0} : {1}", word.Confidence, word.Text);
 		}
 
-		public List<tessnet2_64::tessnet2.Word> DoOCRNormal(Bitmap image, string lang)
+		public static List<tessnet2_64::tessnet2.Word> DoOcrNormal(Bitmap image, string lang)
 		{
 			tessnet2_64::tessnet2.Tesseract ocr = new tessnet2_64::tessnet2.Tesseract();
 			ocr.Init(null, lang, false);
@@ -125,29 +130,31 @@ namespace Tesseract
 			return result;
 		}
 
-		ManualResetEvent m_event;
+		ManualResetEvent mEvent;
 
-		public void DoOCRMultiThred(Bitmap image, string lang)
+		public void DoOcrMultiThread(Bitmap image, string lang)
 		{
 			tessnet2_64::tessnet2.Tesseract ocr = new tessnet2_64::tessnet2.Tesseract();
 			ocr.Init(null, lang, false);
 			// If the OcrDone delegate is not null then this'll be the multithreaded version
 			ocr.OcrDone = new tessnet2_64::tessnet2.Tesseract.OcrDoneHandler(Finished);
 			// For event to work, must use the multithreaded version
-			ocr.ProgressEvent += new tessnet2_64::tessnet2.Tesseract.ProgressHandler(ocr_ProgressEvent);
-			m_event = new ManualResetEvent(false);
+// ReSharper disable RedundantDelegateCreation
+			ocr.ProgressEvent += new tessnet2_64::tessnet2.Tesseract.ProgressHandler(OcrProgressEvent);
+// ReSharper restore RedundantDelegateCreation
+			mEvent = new ManualResetEvent(false);
 			ocr.DoOCR(image, Rectangle.Empty);
 			// Wait here it's finished
-			m_event.WaitOne();
+			mEvent.WaitOne();
 		}
 
 		public void Finished(List<tessnet2_64::tessnet2.Word> result)
 		{
 			DumpResult(result);
-			m_event.Set();
+			mEvent.Set();
 		}
 
-		void ocr_ProgressEvent(int percent)
+		static void OcrProgressEvent(int percent)
 		{
 			Console.WriteLine("{0}% progression", percent);
 		}

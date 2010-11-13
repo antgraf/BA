@@ -40,8 +40,8 @@ namespace Gma.UserActivityMonitor
         /// </remarks>
         private delegate int HookProc(int nCode, int wParam, IntPtr lParam);
 
-        //##############################################################################
-        #region Mouse hook processing
+// ReSharper disable InconsistentNaming
+		#region Mouse hook processing
 
         /// <summary>
         /// This field is not objectively needed but we need to keep a reference on a delegate which will be 
@@ -145,8 +145,8 @@ namespace Gma.UserActivityMonitor
                 MouseEventExtArgs e = new MouseEventExtArgs(
                                                    button,
                                                    clickCount,
-                                                   mouseHookStruct.Point.X,
-                                                   mouseHookStruct.Point.Y,
+                                                   mouseHookStruct.MousePoint.X,
+                                                   mouseHookStruct.MousePoint.Y,
                                                    mouseDelta);
 
                 //Mouse up
@@ -186,10 +186,10 @@ namespace Gma.UserActivityMonitor
                 }
 
                 //If someone listens to move and there was a change in coordinates raise move event
-                if ((s_MouseMove!=null || s_MouseMoveExt!=null) && (m_OldX != mouseHookStruct.Point.X || m_OldY != mouseHookStruct.Point.Y))
+                if ((s_MouseMove!=null || s_MouseMoveExt!=null) && (m_OldX != mouseHookStruct.MousePoint.X || m_OldY != mouseHookStruct.MousePoint.Y))
                 {
-                    m_OldX = mouseHookStruct.Point.X;
-                    m_OldY = mouseHookStruct.Point.Y;
+                    m_OldX = mouseHookStruct.MousePoint.X;
+                    m_OldY = mouseHookStruct.MousePoint.Y;
                     if (s_MouseMove != null)
                     {
                         s_MouseMove.Invoke(null, e);
@@ -287,7 +287,6 @@ namespace Gma.UserActivityMonitor
         
         #endregion
 
-        //##############################################################################
         #region Keyboard hook processing
 
         /// <summary>
@@ -458,6 +457,6 @@ namespace Gma.UserActivityMonitor
         }
 
         #endregion
-
-    }
+// ReSharper restore InconsistentNaming
+	}
 }

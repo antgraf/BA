@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace WindowsInput
+﻿namespace WindowsInput
 {
 /// <summary>
 /// The list of VirtualKeyCodes (see: http://msdn.microsoft.com/en-us/library/ms645540(VS.85).aspx)
 /// </summary>
     public enum VirtualKeyCode : ushort // UInt16
     {
-        /// <summary>
+// ReSharper disable InconsistentNaming
+		/// <summary>
         /// Left mouse button
         /// </summary>
         LBUTTON = 0x01,
@@ -884,7 +880,7 @@ namespace WindowsInput
         //
 
         /// <summary>
-        /// Windows 2000/XP: Used to pass Unicode characters as if they were keystrokes. The PACKET key is the low word of a 32-bit Virtual Key value used for non-keyboard input methods. For more information, see Remark in KEYBDINPUT, SendInput, WM_KEYDOWN, and WM_KEYUP
+        /// Windows 2000/XP: Used to pass Unicode characters as if they were keystrokes. The PACKET key is the low word of a 32-bit Virtual Key value used for non-keyboard input methods. For more information, see Remark in KeyboardInput, SendInput, WM_KEYDOWN, and WM_KEYUP
         /// </summary>
         PACKET = 0xE7,
 
@@ -940,5 +936,6 @@ namespace WindowsInput
         /// Clear key
         /// </summary>
         OEM_CLEAR = 0xFE,
-    }
+// ReSharper restore InconsistentNaming
+	}
 }

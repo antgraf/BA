@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Common
@@ -10,12 +7,12 @@ namespace Common
 	{
 		#region Data
 
-		private ManualResetEvent suspendChangedEvent = new ManualResetEvent(false);
-		private ManualResetEvent terminateEvent = new ManualResetEvent(false);
+		private readonly ManualResetEvent suspendChangedEvent = new ManualResetEvent(false);
+		private readonly ManualResetEvent terminateEvent = new ManualResetEvent(false);
 		private long suspended;
 		private Thread thread;
-		private System.Threading.ThreadState failsafeThreadState = System.Threading.ThreadState.Unstarted;
-		private ThreadStart routine;
+		private ThreadState failsafeThreadState = ThreadState.Unstarted;
+		private readonly ThreadStart routine;
 
 		#endregion Data
 
@@ -26,7 +23,7 @@ namespace Common
 
 		private void ThreadEntry()
 		{
-			failsafeThreadState = System.Threading.ThreadState.Stopped;
+			failsafeThreadState = ThreadState.Stopped;
 			routine();
 		}
 
@@ -41,12 +38,12 @@ namespace Common
 				suspendChangedEvent.Reset();
 				if(needToSuspend)
 				{
-					/// Suspending...
+					// Suspending...
 					if(1 == WaitHandle.WaitAny(new WaitHandle[] { suspendChangedEvent, terminateEvent }))
 					{
 						return true;
 					}
-					/// ...Waking
+					// ...Waking
 				}
 			}
 			return false;
@@ -61,12 +58,11 @@ namespace Common
 
 		public void Start()
 		{
-			thread = new Thread(new ThreadStart(ThreadEntry));
+			thread = new Thread(ThreadEntry) {IsBackground = false};
 
 			// make sure this thread won't be automaticaly
 			// terminated by the runtime when the
 			// application exits
-			thread.IsBackground = false;
 			thread.Start();
 		}
 

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Drawing;
 
 namespace WindowEntity
 {
 	public class Desktop : StaticWindow
 	{
-		private static Desktop pInstance = new Desktop() { X = 0, Y = 0 };
+		private static readonly Desktop pInstance = new Desktop() { X = 0, Y = 0 };
 
 		private Desktop()
 		{}

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace WindowsInput
 {
@@ -11,16 +7,16 @@ namespace WindowsInput
     /// The combined/overlayed structure that includes Mouse, Keyboard and Hardware Input message data (see: http://msdn.microsoft.com/en-us/library/ms646270(VS.85).aspx)
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    struct MOUSEKEYBDHARDWAREINPUT
+    struct MouseKeyboardHardwareInput
     {
         [FieldOffset(0)]
-        public MOUSEINPUT Mouse;
+        public MouseInput Mouse;
 
         [FieldOffset(0)]
-        public KEYBDINPUT Keyboard;
+        public KeyboardInput Keyboard;
 
         [FieldOffset(0)]
-        public HARDWAREINPUT Hardware;
+        public HardwareInput Hardware;
     }
 #pragma warning restore 649
 }

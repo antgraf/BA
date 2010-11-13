@@ -26,7 +26,7 @@ namespace WindowsInput
         /// This function does not reset the keyboard's current state. Any keys that are already pressed when the function is called might interfere with the events that this function generates. To avoid this problem, check the keyboard's state with the GetAsyncKeyState function and correct as necessary.
         /// </remarks>
         [DllImport("user32.dll", SetLastError = true)]
-        static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
+        static extern UInt32 SendInput(UInt32 numberOfInputs, Input[] inputs, Int32 sizeOfInputStructure);
 
         /// <summary>
         /// The GetAsyncKeyState function determines whether a key is up or down at the time the function is called, and whether the key was pressed after a previous call to GetAsyncKeyState. (See: http://msdn.microsoft.com/en-us/library/ms646293(VS.85).aspx)
@@ -101,7 +101,9 @@ namespace WindowsInput
         /// <returns></returns>
         /// <remarks>To set a thread's extra message information, use the SetMessageExtraInfo function. </remarks>
         [DllImport("user32.dll")]
+// ReSharper disable UnusedMember.Local
         static extern IntPtr GetMessageExtraInfo();
+// ReSharper restore UnusedMember.Local
 
         #endregion
 
@@ -194,26 +196,7 @@ namespace WindowsInput
             return (result & 0x01) == 0x01;
         }
 
-		/// <summary>
-		/// Calls the Win32 SendInput method to simulate a Click.
-		/// </summary>
-		/// <param name="click">Click info</param>
-		public static void SimulateClick(MouseFlag click)
-		{
-			SimulateClick(click, 0);
-		}
-
-		/// <summary>
-		/// Calls the Win32 SendInput method to simulate a Click.
-		/// </summary>
-		/// <param name="click">Click info</param>
-		/// <param name="mouseData">Additional data.</param>
-		public static void SimulateClick(MouseFlag click, int mouseData)
-		{
-			SimulateClick(click, mouseData, 0, 0);
-		}
-
-		/// <summary>
+    	/// <summary>
 		/// Calls the Win32 SendInput method to simulate a Click.
 		/// </summary>
 		/// <param name="click">Click info</param>
@@ -231,22 +214,24 @@ namespace WindowsInput
 		/// <param name="mouseData">Additional data.</param>
 		/// <param name="x">X coordinate.</param>
 		/// <param name="y">Y coordinate.</param>
-		public static void SimulateClick(MouseFlag click, int mouseData, int x, int y)
+		public static void SimulateClick(MouseFlag click, int mouseData = 0, int x = 0, int y = 0)
 		{
-			var down = new INPUT();
-			down.Type = (UInt32)InputType.MOUSE;
-			down.Data.Mouse = new MOUSEINPUT();
-			down.Data.Mouse.Flags = (uint)click;
-			down.Data.Mouse.X = x;
-			down.Data.Mouse.Y = y;
-			down.Data.Mouse.MouseData = mouseData;
-			down.Data.Mouse.Time = 0;
-			down.Data.Mouse.ExtraInfo = IntPtr.Zero;
+			var down = new Input();
+			down.Type = (UInt32)InputType.Mouse;
+			down.Data.Mouse = new MouseInput
+			                  	{
+			                  		Flags = (uint) click,
+			                  		X = x,
+			                  		Y = y,
+			                  		MouseData = mouseData,
+			                  		Time = 0,
+			                  		ExtraInfo = IntPtr.Zero
+			                  	};
 
-			INPUT[] inputList = new INPUT[1];
+			Input[] inputList = new Input[1];
 			inputList[0] = down;
 
-			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(INPUT)));
+			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(Input)));
 			if(numberOfSuccessfulSimulatedInputs == 0) throw new Exception(string.Format("The click simulation for {0} was not successful.", click));
 		}
 
@@ -257,21 +242,10 @@ namespace WindowsInput
 		/// <param name="clickUp">Click up info</param>
 		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp)
 		{
-			SimulateClickPress(clickDown, clickUp, 0, 0, 0);
+			SimulateClickPress(clickDown, clickUp, 0);
 		}
 
-		/// <summary>
-		/// Calls the Win32 SendInput method with a ClickDown and ClickUp message in the same input sequence in order to simulate a Key PRESS.
-		/// </summary>
-		/// <param name="clickDown">Click down info</param>
-		/// <param name="clickUp">Click up info</param>
-		/// <param name="mouseData">Additional data.</param>
-		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData)
-		{
-			SimulateClickPress(clickDown, clickUp, mouseData, 0, 0);
-		}
-
-		/// <summary>
+    	/// <summary>
 		/// Calls the Win32 SendInput method with a ClickDown and ClickUp message in the same input sequence in order to simulate a Key PRESS.
 		/// </summary>
 		/// <param name="clickDown">Click down info</param>
@@ -291,33 +265,37 @@ namespace WindowsInput
 		/// <param name="mouseData">Additional data.</param>
 		/// <param name="x">X coordinate.</param>
 		/// <param name="y">Y coordinate.</param>
-		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData, int x, int y)
+		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData, int x = 0, int y = 0)
 		{
-			var down = new INPUT();
-			down.Type = (UInt32)InputType.MOUSE;
-			down.Data.Mouse = new MOUSEINPUT();
-			down.Data.Mouse.Flags = (uint)clickDown;
-			down.Data.Mouse.X = x;
-			down.Data.Mouse.Y = y;
-			down.Data.Mouse.MouseData = mouseData;
-			down.Data.Mouse.Time = 0;
-			down.Data.Mouse.ExtraInfo = IntPtr.Zero;
+			var down = new Input();
+			down.Type = (UInt32)InputType.Mouse;
+			down.Data.Mouse = new MouseInput
+			                  	{
+			                  		Flags = (uint) clickDown,
+			                  		X = x,
+			                  		Y = y,
+			                  		MouseData = mouseData,
+			                  		Time = 0,
+			                  		ExtraInfo = IntPtr.Zero
+			                  	};
 
-			var up = new INPUT();
-			up.Type = (UInt32)InputType.MOUSE;
-			up.Data.Mouse = new MOUSEINPUT();
-			up.Data.Mouse.Flags = (uint)clickUp;
-			up.Data.Mouse.X = x;
-			up.Data.Mouse.Y = y;
-			up.Data.Mouse.MouseData = mouseData;
-			up.Data.Mouse.Time = 0;
-			up.Data.Mouse.ExtraInfo = IntPtr.Zero;
+			var up = new Input();
+			up.Type = (UInt32)InputType.Mouse;
+			up.Data.Mouse = new MouseInput
+			                	{
+			                		Flags = (uint) clickUp,
+			                		X = x,
+			                		Y = y,
+			                		MouseData = mouseData,
+			                		Time = 0,
+			                		ExtraInfo = IntPtr.Zero
+			                	};
 
-			INPUT[] inputList = new INPUT[2];
+			Input[] inputList = new Input[2];
 			inputList[0] = down;
 			inputList[1] = up;
 
-			var numberOfSuccessfulSimulatedInputs = SendInput(2, inputList, Marshal.SizeOf(typeof(INPUT)));
+			var numberOfSuccessfulSimulatedInputs = SendInput(2, inputList, Marshal.SizeOf(typeof(Input)));
 			if(numberOfSuccessfulSimulatedInputs == 0) throw new Exception(string.Format("The click press simulation for {0} & {1} was not successful.", clickDown, clickUp));
 		}
 
@@ -327,19 +305,14 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to press</param>
 		public static void SimulateKeyDown(VirtualKeyCode keyCode)
 		{
-			var down = new INPUT();
-			down.Type = (UInt32)InputType.KEYBOARD;
-			down.Data.Keyboard = new KEYBDINPUT();
-			down.Data.Keyboard.Vk = (UInt16)keyCode;
-			down.Data.Keyboard.Scan = 0;
-			down.Data.Keyboard.Flags = 0;
-			down.Data.Keyboard.Time = 0;
-			down.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+			var down = new Input();
+			down.Type = (UInt32)InputType.Keyboard;
+			down.Data.Keyboard = new KeyboardInput {Vk = (UInt16) keyCode, Scan = 0, Flags = 0, Time = 0, ExtraInfo = IntPtr.Zero};
 
-			INPUT[] inputList = new INPUT[1];
+			Input[] inputList = new Input[1];
 			inputList[0] = down;
 
-			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(INPUT)));
+			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(Input)));
 			if(numberOfSuccessfulSimulatedInputs == 0) throw new Exception(string.Format("The key down simulation for {0} was not successful.", keyCode));
 		}
 
@@ -349,19 +322,21 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to lift up</param>
 		public static void SimulateKeyUp(VirtualKeyCode keyCode)
 		{
-			var up = new INPUT();
-			up.Type = (UInt32)InputType.KEYBOARD;
-			up.Data.Keyboard = new KEYBDINPUT();
-			up.Data.Keyboard.Vk = (UInt16)keyCode;
-			up.Data.Keyboard.Scan = 0;
-			up.Data.Keyboard.Flags = (UInt32)KeyboardFlag.KEYUP;
-			up.Data.Keyboard.Time = 0;
-			up.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+			var up = new Input();
+			up.Type = (UInt32)InputType.Keyboard;
+			up.Data.Keyboard = new KeyboardInput
+			                   	{
+			                   		Vk = (UInt16) keyCode,
+			                   		Scan = 0,
+			                   		Flags = (UInt32) KeyboardFlag.KeyUp,
+			                   		Time = 0,
+			                   		ExtraInfo = IntPtr.Zero
+			                   	};
 
-			INPUT[] inputList = new INPUT[1];
+			Input[] inputList = new Input[1];
 			inputList[0] = up;
 
-			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(INPUT)));
+			var numberOfSuccessfulSimulatedInputs = SendInput(1, inputList, Marshal.SizeOf(typeof(Input)));
 			if(numberOfSuccessfulSimulatedInputs == 0) throw new Exception(string.Format("The key up simulation for {0} was not successful.", keyCode));
 		}
 
@@ -371,29 +346,26 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to press</param>
 		public static void SimulateKeyPress(VirtualKeyCode keyCode)
 		{
-			var down = new INPUT();
-			down.Type = (UInt32)InputType.KEYBOARD;
-			down.Data.Keyboard = new KEYBDINPUT();
-			down.Data.Keyboard.Vk = (UInt16)keyCode;
-			down.Data.Keyboard.Scan = 0;
-			down.Data.Keyboard.Flags = 0;
-			down.Data.Keyboard.Time = 0;
-			down.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+			var down = new Input();
+			down.Type = (UInt32)InputType.Keyboard;
+			down.Data.Keyboard = new KeyboardInput {Vk = (UInt16) keyCode, Scan = 0, Flags = 0, Time = 0, ExtraInfo = IntPtr.Zero};
 
-			var up = new INPUT();
-			up.Type = (UInt32)InputType.KEYBOARD;
-			up.Data.Keyboard = new KEYBDINPUT();
-			up.Data.Keyboard.Vk = (UInt16)keyCode;
-			up.Data.Keyboard.Scan = 0;
-			up.Data.Keyboard.Flags = (UInt32)KeyboardFlag.KEYUP;
-			up.Data.Keyboard.Time = 0;
-			up.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+			var up = new Input();
+			up.Type = (UInt32)InputType.Keyboard;
+			up.Data.Keyboard = new KeyboardInput
+			                   	{
+			                   		Vk = (UInt16) keyCode,
+			                   		Scan = 0,
+			                   		Flags = (UInt32) KeyboardFlag.KeyUp,
+			                   		Time = 0,
+			                   		ExtraInfo = IntPtr.Zero
+			                   	};
 
-			INPUT[] inputList = new INPUT[2];
+			Input[] inputList = new Input[2];
 			inputList[0] = down;
 			inputList[1] = up;
 
-			var numberOfSuccessfulSimulatedInputs = SendInput(2, inputList, Marshal.SizeOf(typeof(INPUT)));
+			var numberOfSuccessfulSimulatedInputs = SendInput(2, inputList, Marshal.SizeOf(typeof(Input)));
 			if(numberOfSuccessfulSimulatedInputs == 0) throw new Exception(string.Format("The key press simulation for {0} was not successful.", keyCode));
 		}
 
@@ -405,38 +377,42 @@ namespace WindowsInput
         {
             if (text.Length > UInt32.MaxValue / 2) throw new ArgumentException(string.Format("The text parameter is too long. It must be less than {0} characters.", UInt32.MaxValue / 2), "text");
 
-            var chars = UTF8Encoding.ASCII.GetBytes(text);
+            var chars = Encoding.ASCII.GetBytes(text);
             var len = chars.Length;
-            INPUT[] inputList = new INPUT[len * 2];
+            Input[] inputList = new Input[len * 2];
             for (int x = 0; x < len; x++)
             {
                 UInt16 scanCode = chars[x];
 
-                var down = new INPUT();
-                down.Type = (UInt32)InputType.KEYBOARD;
-                down.Data.Keyboard = new KEYBDINPUT();
-                down.Data.Keyboard.Vk = 0;
-                down.Data.Keyboard.Scan = scanCode;
-                down.Data.Keyboard.Flags = (UInt32)KeyboardFlag.UNICODE;
-                down.Data.Keyboard.Time = 0;
-                down.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+                var down = new Input();
+                down.Type = (UInt32)InputType.Keyboard;
+                down.Data.Keyboard = new KeyboardInput
+                                     	{
+                                     		Vk = 0,
+                                     		Scan = scanCode,
+                                     		Flags = (UInt32) KeyboardFlag.Unicode,
+                                     		Time = 0,
+                                     		ExtraInfo = IntPtr.Zero
+                                     	};
 
-                var up = new INPUT();
-                up.Type = (UInt32)InputType.KEYBOARD;
-                up.Data.Keyboard = new KEYBDINPUT();
-                up.Data.Keyboard.Vk = 0;
-                up.Data.Keyboard.Scan = scanCode;
-                up.Data.Keyboard.Flags = (UInt32)(KeyboardFlag.KEYUP | KeyboardFlag.UNICODE);
-                up.Data.Keyboard.Time = 0;
-                up.Data.Keyboard.ExtraInfo = IntPtr.Zero;
+            	var up = new Input();
+                up.Type = (UInt32)InputType.Keyboard;
+                up.Data.Keyboard = new KeyboardInput
+                                   	{
+                                   		Vk = 0,
+                                   		Scan = scanCode,
+                                   		Flags = (UInt32) (KeyboardFlag.KeyUp | KeyboardFlag.Unicode),
+                                   		Time = 0,
+                                   		ExtraInfo = IntPtr.Zero
+                                   	};
 
-                // Handle extended keys:
+            	// Handle extended keys:
                 // If the scan code is preceded by a prefix byte that has the value 0xE0 (224),
                 // we need to include the KEYEVENTF_EXTENDEDKEY flag in the Flags property. 
                 if ((scanCode & 0xFF00) == 0xE000)
                 {
-                    down.Data.Keyboard.Flags |= (UInt32)KeyboardFlag.EXTENDEDKEY;
-                    up.Data.Keyboard.Flags |= (UInt32)KeyboardFlag.EXTENDEDKEY;
+                    down.Data.Keyboard.Flags |= (UInt32)KeyboardFlag.ExtendedKey;
+                    up.Data.Keyboard.Flags |= (UInt32)KeyboardFlag.ExtendedKey;
                 }
 
                 inputList[2*x] = down;
@@ -444,12 +420,12 @@ namespace WindowsInput
 
             }
 
-            var numberOfSuccessfulSimulatedInputs = SendInput((UInt32)len*2, inputList, Marshal.SizeOf(typeof(INPUT)));
+            SendInput((UInt32)len*2, inputList, Marshal.SizeOf(typeof(Input)));
         }
 
         /// <summary>
         /// Performs a simple modified keystroke like CTRL-C where CTRL is the modifierKey and C is the key.
-        /// The flow is Modifier KEYDOWN, Key PRESS, Modifier KEYUP.
+        /// The flow is Modifier KEYDOWN, Key PRESS, Modifier KeyUp.
         /// </summary>
         /// <param name="modifierKeyCode">The modifier key</param>
         /// <param name="keyCode">The key to simulate</param>
@@ -462,41 +438,41 @@ namespace WindowsInput
 
         /// <summary>
         /// Performs a modified keystroke where there are multiple modifiers and one key like CTRL-ALT-C where CTRL and ALT are the modifierKeys and C is the key.
-        /// The flow is Modifiers KEYDOWN in order, Key PRESS, Modifiers KEYUP in reverse order.
+        /// The flow is Modifiers KEYDOWN in order, Key PRESS, Modifiers KeyUp in reverse order.
         /// </summary>
         /// <param name="modifierKeyCodes">The list of modifier keys</param>
         /// <param name="keyCode">The key to simulate</param>
         public static void SimulateModifiedKeyStroke(IEnumerable<VirtualKeyCode> modifierKeyCodes, VirtualKeyCode keyCode)
         {
-            if (modifierKeyCodes != null) modifierKeyCodes.ToList().ForEach(x => SimulateKeyDown(x));
+            if (modifierKeyCodes != null) modifierKeyCodes.ToList().ForEach(SimulateKeyDown);
             SimulateKeyPress(keyCode);
-            if (modifierKeyCodes != null) modifierKeyCodes.Reverse().ToList().ForEach(x => SimulateKeyUp(x));
+            if (modifierKeyCodes != null) modifierKeyCodes.Reverse().ToList().ForEach(SimulateKeyUp);
         }
 
         /// <summary>
         /// Performs a modified keystroke where there is one modifier and multiple keys like CTRL-K-C where CTRL is the modifierKey and K and C are the keys.
-        /// The flow is Modifier KEYDOWN, Keys PRESS in order, Modifier KEYUP.
+        /// The flow is Modifier KEYDOWN, Keys PRESS in order, Modifier KeyUp.
         /// </summary>
         /// <param name="modifierKey">The modifier key</param>
         /// <param name="keyCodes">The list of keys to simulate</param>
         public static void SimulateModifiedKeyStroke(VirtualKeyCode modifierKey, IEnumerable<VirtualKeyCode> keyCodes)
         {
             SimulateKeyDown(modifierKey);
-            if (keyCodes != null) keyCodes.ToList().ForEach(x => SimulateKeyPress(x));
+            if (keyCodes != null) keyCodes.ToList().ForEach(SimulateKeyPress);
             SimulateKeyUp(modifierKey);
         }
 
         /// <summary>
         /// Performs a modified keystroke where there are multiple modifiers and multiple keys like CTRL-ALT-K-C where CTRL and ALT are the modifierKeys and K and C are the keys.
-        /// The flow is Modifiers KEYDOWN in order, Keys PRESS in order, Modifiers KEYUP in reverse order.
+        /// The flow is Modifiers KEYDOWN in order, Keys PRESS in order, Modifiers KeyUp in reverse order.
         /// </summary>
         /// <param name="modifierKeyCodes">The list of modifier keys</param>
         /// <param name="keyCodes">The list of keys to simulate</param>
         public static void SimulateModifiedKeyStroke(IEnumerable<VirtualKeyCode> modifierKeyCodes, IEnumerable<VirtualKeyCode> keyCodes)
         {
-            if (modifierKeyCodes != null) modifierKeyCodes.ToList().ForEach(x => SimulateKeyDown(x));
-            if (keyCodes != null) keyCodes.ToList().ForEach(x => SimulateKeyPress(x));
-            if (modifierKeyCodes != null) modifierKeyCodes.Reverse().ToList().ForEach(x => SimulateKeyUp(x));
+            if (modifierKeyCodes != null) modifierKeyCodes.ToList().ForEach(SimulateKeyDown);
+            if (keyCodes != null) keyCodes.ToList().ForEach(SimulateKeyPress);
+            if (modifierKeyCodes != null) modifierKeyCodes.Reverse().ToList().ForEach(SimulateKeyUp);
         }
 
         #endregion

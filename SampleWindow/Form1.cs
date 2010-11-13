@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using SampleWindow.Properties;
 
 namespace SampleWindow
 {
@@ -16,9 +11,10 @@ namespace SampleWindow
 			InitializeComponent();
 		}
 
+// ReSharper disable InconsistentNaming
 		private void button1_Click(object sender, EventArgs e)
 		{
-			this.Text = "RED clicked";
+			Text = Resources.SampleForm_button1_Click_RED_clicked;
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -28,35 +24,39 @@ namespace SampleWindow
 
 		private void label1_DoubleClick(object sender, EventArgs e)
 		{
-			this.Text = "LABEL double-clicked";
+			Text = Resources.SampleForm_label1_DoubleClick_LABEL_double_clicked;
 		}
 
 		private void label1_Click(object sender, EventArgs e)
 		{
 			MouseEventArgs m = e as MouseEventArgs;
-			switch(m.Button)
+			if(m != null)
 			{
-				case MouseButtons.Left:
+				switch (m.Button)
 				{
-					this.Text = "LABEL Lclicked";
-					break;
-				}
-				case MouseButtons.Right:
-				{
-					this.Text = "LABEL Rclicked";
-					break;
-				}
-				case MouseButtons.Middle:
-				{
-					this.Text = "LABEL Mclicked";
-					break;
+					case MouseButtons.Left:
+						{
+							Text = Resources.SampleForm_label1_Click_LABEL_Lclicked;
+							break;
+						}
+					case MouseButtons.Right:
+						{
+							Text = Resources.SampleForm_label1_Click_LABEL_Rclicked;
+							break;
+						}
+					case MouseButtons.Middle:
+						{
+							Text = Resources.SampleForm_label1_Click_LABEL_Mclicked;
+							break;
+						}
 				}
 			}
 		}
 
 		private void button3_Click(object sender, EventArgs e)
 		{
-			this.Text = textBox1.Text;
+			Text = textBox1.Text;
 		}
+// ReSharper restore InconsistentNaming
 	}
 }

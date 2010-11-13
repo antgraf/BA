@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WindowEntity
 {
@@ -145,7 +142,7 @@ namespace WindowEntity
 			return p;
 		}
 
-		public WindowEntity.CoordinateType Type
+		public CoordinateType Type
 		{
 			get { return pType; }
 			set { pType = value; }

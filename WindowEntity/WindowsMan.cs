@@ -6,7 +6,6 @@ extern alias tessnet2_64;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using Tesseract;
@@ -37,10 +36,12 @@ namespace WindowEntity
 		private const double pDefaultZoomFactor = 3.0;
 		private const int pSecond = 1000;
 
+// ReSharper disable UnaccessedField.Local
 		private static Ocr pOcr = null;
+// ReSharper restore UnaccessedField.Local
 		private static object pTesseract = null;
 		private static bool pTesseractInitialized = false;
-		private static List<Window> pRegisteredWindows = new List<Window>();
+		private static readonly List<Window> pRegisteredWindows = new List<Window>();
 
 		private static void InitTesseract()
 		{
@@ -89,13 +90,10 @@ namespace WindowEntity
 		{
 			lock(pRegisteredWindows)
 			{
-				foreach(Window registered in pRegisteredWindows)
+				foreach(Window registered in pRegisteredWindows.Where(registered => registered.Handle == window.Handle))
 				{
-					if(registered.Handle == window.Handle)
-					{
-						pRegisteredWindows.Remove(registered);
-						return true;
-					}
+					pRegisteredWindows.Remove(registered);
+					return true;
 				}
 				return false;
 			}
@@ -105,14 +103,11 @@ namespace WindowEntity
 		{
 			lock(pRegisteredWindows)
 			{
-				foreach(Window registered in pRegisteredWindows)
+				foreach(Window registered in pRegisteredWindows.Where(registered => registered.Handle == window.Handle))
 				{
-					if(registered.Handle == window.Handle)
-					{
-						pRegisteredWindows.Remove(registered);
-						pRegisteredWindows.Add(window);
-						return true;
-					}
+					pRegisteredWindows.Remove(registered);
+					pRegisteredWindows.Add(window);
+					return true;
 				}
 				return false;
 			}
@@ -144,14 +139,7 @@ namespace WindowEntity
 		{
 			lock(pRegisteredWindows)
 			{
-				foreach(Window registered in pRegisteredWindows)
-				{
-					if(registered.Handle == window.Handle)
-					{
-						return true;
-					}
-				}
-				return false;
+				return pRegisteredWindows.Any(registered => registered.Handle == window.Handle);
 			}
 		}
 
@@ -160,33 +148,11 @@ namespace WindowEntity
 			lock(pRegisteredWindows)
 			{
 				Window[] windows = Window.FindWindowsByProcessName(proccessName);
-				foreach(Window window in windows)
-				{
-					if(RegisterWindow(window))
-					{
-						return window;
-					}
-				}
-				return null;
+				return windows.FirstOrDefault(RegisterWindow);
 			}
 		}
 
-		public static Window WaitAndAttachTo(string proccessName)
-		{
-			return WaitAndAttachTo(proccessName, pDefaultWaitTimeout, pDefaultCheckPeriod, pDefaultRetryAttempts);
-		}
-
-		public static Window WaitAndAttachTo(string proccessName, int waitSeconds)
-		{
-			return WaitAndAttachTo(proccessName, waitSeconds, pDefaultCheckPeriod, pDefaultRetryAttempts);
-		}
-
-		public static Window WaitAndAttachTo(string proccessName, int waitSeconds, int checkPeriod)
-		{
-			return WaitAndAttachTo(proccessName, waitSeconds, checkPeriod, pDefaultRetryAttempts);
-		}
-
-		public static Window WaitAndAttachTo(string proccessName, int waitSeconds, int checkPeriod, int retryAttempts)
+		public static Window WaitAndAttachTo(string proccessName, int waitSeconds = pDefaultWaitTimeout, int checkPeriod = pDefaultCheckPeriod, int retryAttempts = pDefaultRetryAttempts)
 		{
 			lock(pRegisteredWindows)
 			{
@@ -218,14 +184,7 @@ namespace WindowEntity
 		public static OcrWord[] RecognizeText(Bitmap image)
 		{
 			InitTesseract();
-			if(Globals.x64)
-			{
-				return RecognizeText64(image);
-			}
-			else
-			{
-				return RecognizeText32(image);
-			}
+			return Globals.x64 ? RecognizeText64(image) : RecognizeText32(image);
 		}
 
 		private static OcrWord[] RecognizeText32(Bitmap image)
@@ -233,15 +192,15 @@ namespace WindowEntity
 #if SaveDebugOcrImages
 			((tessnet2_32::tessnet2.Tesseract)pTesseract).GetThresholdedImage(image, Rectangle.Empty).Save(Guid.NewGuid().ToString() + ".bmp");
 #endif
-			List<tessnet2_32::tessnet2.Word> words = ((Ocr32)pOcr).DoOCRNormal(image, "eng");
+			List<tessnet2_32::tessnet2.Word> words = Ocr32.DoOcrNormal(image, "eng");
 			if(words == null)
 			{
 				return null;
 			}
 			List<OcrWord> ret = new List<OcrWord>();
-			OcrQuality quality;
 			foreach(tessnet2_32::tessnet2.Word word in words)
 			{
+				OcrQuality quality;
 				if(word.Confidence < 80)
 				{
 					quality = OcrQuality.Good;
@@ -265,15 +224,15 @@ namespace WindowEntity
 #if SaveDebugOcrImages
 			((tessnet2_64::tessnet2.Tesseract)pTesseract).GetThresholdedImage(image, Rectangle.Empty).Save(Guid.NewGuid().ToString() + ".bmp");
 #endif
-			List<tessnet2_64::tessnet2.Word> words = ((Ocr64)pOcr).DoOCRNormal(image, "eng");
+			List<tessnet2_64::tessnet2.Word> words = Ocr64.DoOcrNormal(image, "eng");
 			if(words == null)
 			{
 				return null;
 			}
 			List<OcrWord> ret = new List<OcrWord>();
-			OcrQuality quality;
 			foreach(tessnet2_64::tessnet2.Word word in words)
 			{
+				OcrQuality quality;
 				if(word.Confidence < 80)
 				{
 					quality = OcrQuality.Good;
@@ -292,14 +251,9 @@ namespace WindowEntity
 			return ret.ToArray();
 		}
 
-		public static OcrWord[] RecognizeTextWithZoom(Bitmap image)
+		public static OcrWord[] RecognizeTextWithZoom(Bitmap image, double zoom = pDefaultZoomFactor)
 		{
-			return RecognizeTextWithZoom(image, pDefaultZoomFactor);
-		}
-
-		public static OcrWord[] RecognizeTextWithZoom(Bitmap image, double zoom)
-		{
-			OcrWord[] words = null;
+			OcrWord[] words;
 			using(Bitmap result = new Bitmap((int)(image.Width * zoom), (int)(image.Height * zoom)))
 			{
 				using(Graphics gdi = Graphics.FromImage(result))

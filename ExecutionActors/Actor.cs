@@ -1,12 +1,7 @@
 ﻿#define UseDeprecatedThreadFunctions	// We use them not for synchronization but as they are for suspend & resume, so it's ok
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Runtime.InteropServices;
-using Common;
 using Logger;
 using BACommon;
 
@@ -25,6 +20,7 @@ namespace ExecutionActors
 	{
 		private const string pLogNameFormat = "{0}-{1}({2}).log.txt";
 
+// ReSharper disable InconsistentNaming
 #if UseDeprecatedThreadFunctions
 		protected Thread pThread = null;
 #else
@@ -34,6 +30,7 @@ namespace ExecutionActors
 		protected Exception pUnhandledException = null;
 		protected IActorObserver pObserver = null;
 		protected FileLogger pLog = null;
+// ReSharper restore InconsistentNaming
 
 		public Actor()
 		{
@@ -43,11 +40,7 @@ namespace ExecutionActors
 		private string CreateFileName()
 		{
 			DateTime now = DateTime.Now;
-			return FileUtils.MakeValidFileName(
-				string.Format(pLogNameFormat,
-					now.ToString(),
-					Guid.NewGuid().ToString(),
-					this.GetType().ToString()));
+			return FileUtils.MakeValidFileName(string.Format(pLogNameFormat, now, Guid.NewGuid(), GetType()));
 		}
 
 		public virtual void Init(object data, IActorObserver observer)
@@ -61,9 +54,9 @@ namespace ExecutionActors
 		public virtual void Run()
 		{
 #if UseDeprecatedThreadFunctions
-			pThread = new Thread(new ThreadStart(PreWorker));
+			pThread = new Thread(PreWorker);
 #else
-			pThread = new SuspendableThread(new ThreadStart(PreWorker));
+			pThread = new SuspendableThread(PreWorker);
 #endif
 			pThread.Start();
 			pStatus = ActorStatus.Running;

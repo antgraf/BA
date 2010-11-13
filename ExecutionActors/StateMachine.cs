@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Timers;
 
 namespace ExecutionActors
@@ -10,19 +7,19 @@ namespace ExecutionActors
 	{
 		private const double pActivationInterval = 1.0 * 1000;
 
-		private static Dictionary<string, StateMachine> pStateMachines = new Dictionary<string, StateMachine>();
-		private Queue<int> pEventQueue = new Queue<int>();
-		private Timer pActivationTimer = new Timer(pActivationInterval);
+		private static readonly Dictionary<string, StateMachine> pStateMachines = new Dictionary<string, StateMachine>();
+		private readonly Queue<int> pEventQueue = new Queue<int>();
+		private readonly Timer pActivationTimer = new Timer(pActivationInterval);
 
 		public StateMachine(State initialState)
 		{
 			pCurrentSubState = initialState;
 			pActivationTimer.AutoReset = true;
-			pActivationTimer.Elapsed += new ElapsedEventHandler(pActivationTimer_Elapsed);
+			pActivationTimer.Elapsed += PActivationTimerElapsed;
 			pActivationTimer.Start();
 		}
 
-		private void pActivationTimer_Elapsed(object sender, ElapsedEventArgs e)
+		private void PActivationTimerElapsed(object sender, ElapsedEventArgs e)
 		{
 			lock(pEventQueue)
 			{

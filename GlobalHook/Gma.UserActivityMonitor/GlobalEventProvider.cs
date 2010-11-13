@@ -21,8 +21,8 @@ namespace Gma.UserActivityMonitor
             }
         }
 
-        //################################################################
-        #region Mouse events
+// ReSharper disable InconsistentNaming
+		#region Mouse events
 
         private event MouseEventHandler m_MouseMove;
 
@@ -274,7 +274,6 @@ namespace Gma.UserActivityMonitor
 
         #endregion
 
-        //################################################################
         #region Keyboard events
 
         private event KeyPressEventHandler m_KeyPress;
@@ -386,7 +385,6 @@ namespace Gma.UserActivityMonitor
         }
 
         #endregion
-
-        
-    }
+// ReSharper restore InconsistentNaming
+	}
 }

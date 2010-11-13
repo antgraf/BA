@@ -59,13 +59,13 @@
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			this.exitToolStripMenuItem.Click += new System.EventHandler(ExitToolStripMenuItemClick);
 			// 
 			// timer
 			// 
 			this.timer.Enabled = true;
 			this.timer.Interval = 200;
-			this.timer.Tick += new System.EventHandler(this.timer_Tick);
+			this.timer.Tick += new System.EventHandler(this.TimerTick);
 			// 
 			// txtboxWindow
 			// 
@@ -93,7 +93,7 @@
 			this.chkboxTop.TabIndex = 3;
 			this.chkboxTop.Text = "On Top";
 			this.chkboxTop.UseVisualStyleBackColor = true;
-			this.chkboxTop.CheckedChanged += new System.EventHandler(this.chkboxTop_CheckedChanged);
+			this.chkboxTop.CheckedChanged += new System.EventHandler(this.ChkboxTopCheckedChanged);
 			// 
 			// MainForm
 			// 
@@ -107,8 +107,8 @@
 			this.Name = "MainForm";
 			this.Text = "Pixel Scout";
 			this.TopMost = true;
-			this.Load += new System.EventHandler(this.MainForm_Load);
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+			this.Load += new System.EventHandler(this.MainFormLoad);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
 			this.trayMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
