@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.refreshPluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,8 +37,8 @@
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
-			this.txtboxOutput = new System.Windows.Forms.TextBox();
 			this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+			this.txtboxOutput = new System.Windows.Forms.TextBox();
 			this.mnuMain.SuspendLayout();
 			this.statusBar.SuspendLayout();
 			this.SuspendLayout();
@@ -66,14 +67,14 @@
 			// refreshPluginsToolStripMenuItem
 			// 
 			this.refreshPluginsToolStripMenuItem.Name = "refreshPluginsToolStripMenuItem";
-			this.refreshPluginsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.refreshPluginsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.refreshPluginsToolStripMenuItem.Text = "&Refresh plugins";
 			this.refreshPluginsToolStripMenuItem.Click += new System.EventHandler(this.RefreshPluginsToolStripMenuItemClick);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(ExitToolStripMenuItemClick);
 			// 
@@ -94,7 +95,7 @@
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItemClick);
 			// 
@@ -108,6 +109,12 @@
 			this.statusBar.TabIndex = 1;
 			this.statusBar.Text = "statusStrip1";
 			// 
+			// lblStatus
+			// 
+			this.lblStatus.Name = "lblStatus";
+			this.lblStatus.Size = new System.Drawing.Size(25, 17);
+			this.lblStatus.Text = "Idle";
+			// 
 			// txtboxOutput
 			// 
 			this.txtboxOutput.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -119,12 +126,6 @@
 			this.txtboxOutput.Size = new System.Drawing.Size(292, 227);
 			this.txtboxOutput.TabIndex = 2;
 			// 
-			// lblStatus
-			// 
-			this.lblStatus.Name = "lblStatus";
-			this.lblStatus.Size = new System.Drawing.Size(25, 17);
-			this.lblStatus.Text = "Idle";
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -133,6 +134,7 @@
 			this.Controls.Add(this.txtboxOutput);
 			this.Controls.Add(this.statusBar);
 			this.Controls.Add(this.mnuMain);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "MainForm";
 			this.Text = "BA (in development)";

@@ -1,4 +1,5 @@
 ﻿using BACommon;
+using System;
 
 namespace ExecutionActors
 {
@@ -78,19 +79,19 @@ namespace ExecutionActors
 			pActor.GoToFinalState();
 		}
 
-		public void SaveSettings()
+		public virtual void SaveSettings(Type[] types = null)
 		{
-			string xml = pSettings.XmlSerialize();
+			string xml = pSettings.XmlSerialize(types);
 			FileUtils.WriteFileContentUtf8(GetSettingsFileName(), xml);
 		}
 
-		public void LoadSettings()
+		public virtual void LoadSettings(Type[] types = null)
 		{
 			pSettings = null;
 			string xml = FileUtils.ReadFileContentUtf8(GetSettingsFileName());
 			if(!StringUtils.IsEmpty(xml))
 			{
-				pSettings = Settings.XmlDeserialize(xml);
+				pSettings = Settings.XmlDeserialize(xml, types);
 			}
 			if(pSettings == null)
 			{
