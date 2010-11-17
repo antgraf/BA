@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using System.Xml.Serialization;
 using System.Xml;
 
@@ -6,6 +8,13 @@ using System.Xml;
 
 namespace ExecutionActors
 {
+	public enum DictionaryValuesTypeAttribute
+	{
+		No,
+		Core,
+		Specific
+	}
+
 	/// <summary>
 	/// XML serializable version of generic dictionary collection.
 	/// </summary>
@@ -32,7 +41,6 @@ namespace ExecutionActors
 		public void ReadXml(XmlReader reader)
 		{
 			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
 			bool wasEmpty = reader.IsEmptyElement;
 			reader.Read();
 			if(wasEmpty) return;
@@ -42,8 +50,12 @@ namespace ExecutionActors
 				reader.ReadStartElement("key");
 				TKey key = (TKey)keySerializer.Deserialize(reader);
 				reader.ReadEndElement();
+				string typeName = reader.GetAttribute("type");
+				Type type = string.IsNullOrEmpty(typeName) ? typeof(TValue) : Type.GetType(typeName, true);
 				reader.ReadStartElement("value");
-				TValue value = (TValue)valueSerializer.Deserialize(reader);
+// ReSharper disable AssignNullToNotNullAttribute
+				TValue value = (TValue)new XmlSerializer(type).Deserialize(reader);
+// ReSharper restore AssignNullToNotNullAttribute
 				reader.ReadEndElement();
 				Add(key, value);
 				reader.ReadEndElement();
@@ -59,7 +71,6 @@ namespace ExecutionActors
 		public void WriteXml(XmlWriter writer)
 		{
 			XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
-			XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
 			foreach(TKey key in Keys)
 			{
 				writer.WriteStartElement("item");
@@ -68,12 +79,28 @@ namespace ExecutionActors
 				writer.WriteEndElement();
 				writer.WriteStartElement("value");
 				TValue value = this[key];
-				valueSerializer.Serialize(writer, value);
+				switch(ValuesTypeAttribute)
+				{
+					case DictionaryValuesTypeAttribute.Core:
+					{
+						writer.WriteAttributeString("type", value.GetType().ToString());
+						break;
+					}
+					case DictionaryValuesTypeAttribute.Specific:
+					{
+						writer.WriteAttributeString("type", value.GetType().AssemblyQualifiedName);
+						break;
+					}
+				}
+				new XmlSerializer(value.GetType()).Serialize(writer, value);
 				writer.WriteEndElement();
 				writer.WriteEndElement();
 			}
 		}
 		#endregion
+
+		[DefaultValue(DictionaryValuesTypeAttribute.Core)]
+		public DictionaryValuesTypeAttribute ValuesTypeAttribute { get; set; }
 	}
 
 	/// <summary>

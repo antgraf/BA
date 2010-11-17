@@ -7,6 +7,11 @@ namespace ExecutionActors
 {
 	public class Settings : XmlSerializableDictionary<string, object>
 	{
+		public Settings()
+		{
+			ValuesTypeAttribute = DictionaryValuesTypeAttribute.Specific;
+		}
+
 		public string XmlSerialize(Type[] types = null)
 		{
 			XmlSerializer xmler = types == null ? new XmlSerializer(typeof(Settings)) : new XmlSerializer(typeof(Settings), types);
