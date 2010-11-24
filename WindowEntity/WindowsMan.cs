@@ -119,7 +119,7 @@ namespace WindowEntity
 			{
 				foreach(Window registered in pRegisteredWindows)
 				{
-					if(registered.Handle == window.Handle)
+					if(window != null && registered.Handle == window.Handle)
 					{
 						Window newwindow = Window.FromHandle(window.Handle.Handle);
 						if(newwindow == null)
