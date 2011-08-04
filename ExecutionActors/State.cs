@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ExecutionActors
 {
@@ -12,6 +13,9 @@ namespace ExecutionActors
 // ReSharper restore InconsistentNaming
 
 		public virtual void Init(object arg)
+		{}
+
+		protected virtual void HandleError(Exception e)
 		{}
 
 		private void ChangeSubState(State from, State to)
@@ -51,7 +55,19 @@ namespace ExecutionActors
 		public virtual State HandleEvent(int eventId)
 		{
 			// TODO add events
-			State newState = HandleEventCustom(eventId) ?? _HandleEvent(eventId);
+			State newState = null;
+			try
+			{
+				newState = HandleEventCustom(eventId);
+			}
+			catch(Exception e)
+			{
+				HandleError(e);
+			}
+			if(newState == null)
+			{
+				newState = _HandleEvent(eventId);
+			}
 			if(newState == null && pCurrentSubState != null)
 			{
 				State newSubState = pCurrentSubState.HandleEvent(eventId);
@@ -78,14 +94,28 @@ namespace ExecutionActors
 			{
 				pCurrentSubState._Leave();
 			}
-			Leave();
+			try
+			{
+				Leave();
+			}
+			catch(Exception e)
+			{
+				HandleError(e);
+			}
 		}
 
 // ReSharper disable InconsistentNaming
 		private void _Enter()
 // ReSharper restore InconsistentNaming
 		{
-			Enter();
+			try
+			{
+				Enter();
+			}
+			catch(Exception e)
+			{
+				HandleError(e);
+			}
 			if(pCurrentSubState != null)
 			{
 				pCurrentSubState._Enter();

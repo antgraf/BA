@@ -104,10 +104,23 @@ namespace WindowsInput
 // ReSharper disable UnusedMember.Local
         static extern IntPtr GetMessageExtraInfo();
 // ReSharper restore UnusedMember.Local
+		/// <summary>
+		/// Translates (maps) a virtual-key code into a scan code or character value, or translates a scan code into a virtual-key code.
+		/// </summary>
+		/// <param name="uCode">The virtual key code or scan code for a key. How this value is interpreted depends on the value of the <paramref name="uMapType"/> parameter.</param>
+		/// <param name="uMapType">The translation to be performed. The value of this parameter depends on the value of the <paramref name="uCode"/> parameter.</param>
+		/// <returns>The return value is either a scan code, a virtual-key code, or a character value, depending on the value of uCode and uMapType. If there is no translation, the return value is zero.</returns>
+		[DllImport("user32.dll")]
+		static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
         #endregion
 
         #region Methods
+
+		private static ushort GetScanCode(VirtualKeyCode keyCode)
+		{
+			return (ushort)MapVirtualKey((uint)keyCode, (uint)VirtualKeyMapType.MAPVK_VK_TO_VSC);
+		}
 
         /// <summary>
         /// Determines whether a key is up or down at the time the function is called by calling the GetAsyncKeyState function. (See: http://msdn.microsoft.com/en-us/library/ms646293(VS.85).aspx)
@@ -216,17 +229,22 @@ namespace WindowsInput
 		/// <param name="y">Y coordinate.</param>
 		public static void SimulateClick(MouseFlag click, int mouseData = 0, int x = 0, int y = 0)
 		{
-			var down = new Input();
-			down.Type = (UInt32)InputType.Mouse;
-			down.Data.Mouse = new MouseInput
-			                  	{
-			                  		Flags = (uint) click,
-			                  		X = x,
-			                  		Y = y,
-			                  		MouseData = mouseData,
-			                  		Time = 0,
-			                  		ExtraInfo = IntPtr.Zero
-			                  	};
+			var down = new Input
+			           {
+			           	Type = (UInt32) InputType.Mouse,
+			           	Data =
+			           		{
+			           			Mouse = new MouseInput
+			           			        {
+			           			        	Flags = (uint) click,
+			           			        	X = x,
+			           			        	Y = y,
+			           			        	MouseData = mouseData,
+			           			        	Time = 0,
+			           			        	ExtraInfo = IntPtr.Zero
+			           			        }
+			           		}
+			           };
 
 			Input[] inputList = new Input[1];
 			inputList[0] = down;
@@ -267,29 +285,39 @@ namespace WindowsInput
 		/// <param name="y">Y coordinate.</param>
 		public static void SimulateClickPress(MouseFlag clickDown, MouseFlag clickUp, int mouseData, int x = 0, int y = 0)
 		{
-			var down = new Input();
-			down.Type = (UInt32)InputType.Mouse;
-			down.Data.Mouse = new MouseInput
-			                  	{
-			                  		Flags = (uint) clickDown,
-			                  		X = x,
-			                  		Y = y,
-			                  		MouseData = mouseData,
-			                  		Time = 0,
-			                  		ExtraInfo = IntPtr.Zero
-			                  	};
+			var down = new Input
+			           {
+			           	Type = (UInt32) InputType.Mouse,
+			           	Data =
+			           		{
+			           			Mouse = new MouseInput
+			           			        {
+			           			        	Flags = (uint) clickDown,
+			           			        	X = x,
+			           			        	Y = y,
+			           			        	MouseData = mouseData,
+			           			        	Time = 0,
+			           			        	ExtraInfo = IntPtr.Zero
+			           			        }
+			           		}
+			           };
 
-			var up = new Input();
-			up.Type = (UInt32)InputType.Mouse;
-			up.Data.Mouse = new MouseInput
-			                	{
-			                		Flags = (uint) clickUp,
-			                		X = x,
-			                		Y = y,
-			                		MouseData = mouseData,
-			                		Time = 0,
-			                		ExtraInfo = IntPtr.Zero
-			                	};
+			var up = new Input
+			         {
+			         	Type = (UInt32) InputType.Mouse,
+			         	Data =
+			         		{
+			         			Mouse = new MouseInput
+			         			        {
+			         			        	Flags = (uint) clickUp,
+			         			        	X = x,
+			         			        	Y = y,
+			         			        	MouseData = mouseData,
+			         			        	Time = 0,
+			         			        	ExtraInfo = IntPtr.Zero
+			         			        }
+			         		}
+			         };
 
 			Input[] inputList = new Input[2];
 			inputList[0] = down;
@@ -305,9 +333,22 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to press</param>
 		public static void SimulateKeyDown(VirtualKeyCode keyCode)
 		{
-			var down = new Input();
-			down.Type = (UInt32)InputType.Keyboard;
-			down.Data.Keyboard = new KeyboardInput {Vk = (UInt16) keyCode, Scan = 0, Flags = 0, Time = 0, ExtraInfo = IntPtr.Zero};
+			var down = new Input
+			{
+				Type = (UInt32)InputType.Keyboard,
+				Data =
+				{
+					Keyboard =
+						new KeyboardInput
+						{
+							Vk = (UInt16)keyCode,
+							Scan = GetScanCode(keyCode),
+							Flags = 0,
+							Time = 0,
+							ExtraInfo = IntPtr.Zero
+						}
+				}
+			};
 
 			Input[] inputList = new Input[1];
 			inputList[0] = down;
@@ -322,16 +363,21 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to lift up</param>
 		public static void SimulateKeyUp(VirtualKeyCode keyCode)
 		{
-			var up = new Input();
-			up.Type = (UInt32)InputType.Keyboard;
-			up.Data.Keyboard = new KeyboardInput
-			                   	{
-			                   		Vk = (UInt16) keyCode,
-			                   		Scan = 0,
-			                   		Flags = (UInt32) KeyboardFlag.KeyUp,
-			                   		Time = 0,
-			                   		ExtraInfo = IntPtr.Zero
-			                   	};
+			var up = new Input
+			         {
+			         	Type = (UInt32) InputType.Keyboard,
+			         	Data =
+			         		{
+			         			Keyboard = new KeyboardInput
+			         			           {
+			         			           	Vk = (UInt16) keyCode,
+											Scan = GetScanCode(keyCode),
+			         			           	Flags = (UInt32) KeyboardFlag.KeyUp,
+			         			           	Time = 0,
+			         			           	ExtraInfo = IntPtr.Zero
+			         			           }
+			         		}
+			         };
 
 			Input[] inputList = new Input[1];
 			inputList[0] = up;
@@ -346,20 +392,38 @@ namespace WindowsInput
 		/// <param name="keyCode">The VirtualKeyCode to press</param>
 		public static void SimulateKeyPress(VirtualKeyCode keyCode)
 		{
-			var down = new Input();
-			down.Type = (UInt32)InputType.Keyboard;
-			down.Data.Keyboard = new KeyboardInput {Vk = (UInt16) keyCode, Scan = 0, Flags = 0, Time = 0, ExtraInfo = IntPtr.Zero};
+			var down = new Input
+			           {
+			           	Type = (UInt32) InputType.Keyboard,
+			           	Data =
+			           		{
+			           			Keyboard =
+									new KeyboardInput
+									{
+										Vk = (UInt16)keyCode,
+										Scan = GetScanCode(keyCode),
+										Flags = 0,
+										Time = 0,
+										ExtraInfo = IntPtr.Zero
+									}
+			           		}
+			           };
 
-			var up = new Input();
-			up.Type = (UInt32)InputType.Keyboard;
-			up.Data.Keyboard = new KeyboardInput
-			                   	{
-			                   		Vk = (UInt16) keyCode,
-			                   		Scan = 0,
-			                   		Flags = (UInt32) KeyboardFlag.KeyUp,
-			                   		Time = 0,
-			                   		ExtraInfo = IntPtr.Zero
-			                   	};
+			var up = new Input
+			         {
+			         	Type = (UInt32) InputType.Keyboard,
+			         	Data =
+			         		{
+			         			Keyboard = new KeyboardInput
+			         			           {
+			         			           	Vk = (UInt16) keyCode,
+											Scan = GetScanCode(keyCode),
+			         			           	Flags = (UInt32) KeyboardFlag.KeyUp,
+			         			           	Time = 0,
+			         			           	ExtraInfo = IntPtr.Zero
+			         			           }
+			         		}
+			         };
 
 			Input[] inputList = new Input[2];
 			inputList[0] = down;
@@ -384,27 +448,37 @@ namespace WindowsInput
             {
                 UInt16 scanCode = chars[x];
 
-                var down = new Input();
-                down.Type = (UInt32)InputType.Keyboard;
-                down.Data.Keyboard = new KeyboardInput
-                                     	{
-                                     		Vk = 0,
-                                     		Scan = scanCode,
-                                     		Flags = (UInt32) KeyboardFlag.Unicode,
-                                     		Time = 0,
-                                     		ExtraInfo = IntPtr.Zero
-                                     	};
+            	var down = new Input
+            	           {
+            	           	Type = (UInt32) InputType.Keyboard,
+            	           	Data =
+            	           		{
+            	           			Keyboard = new KeyboardInput
+            	           			           {
+            	           			           	Vk = 0,
+            	           			           	Scan = scanCode,
+            	           			           	Flags = (UInt32) KeyboardFlag.Unicode,
+            	           			           	Time = 0,
+            	           			           	ExtraInfo = IntPtr.Zero
+            	           			           }
+            	           		}
+            	           };
 
-            	var up = new Input();
-                up.Type = (UInt32)InputType.Keyboard;
-                up.Data.Keyboard = new KeyboardInput
-                                   	{
-                                   		Vk = 0,
-                                   		Scan = scanCode,
-                                   		Flags = (UInt32) (KeyboardFlag.KeyUp | KeyboardFlag.Unicode),
-                                   		Time = 0,
-                                   		ExtraInfo = IntPtr.Zero
-                                   	};
+            	var up = new Input
+            	         {
+            	         	Type = (UInt32) InputType.Keyboard,
+            	         	Data =
+            	         		{
+            	         			Keyboard = new KeyboardInput
+            	         			           {
+            	         			           	Vk = 0,
+            	         			           	Scan = scanCode,
+            	         			           	Flags = (UInt32) (KeyboardFlag.KeyUp | KeyboardFlag.Unicode),
+            	         			           	Time = 0,
+            	         			           	ExtraInfo = IntPtr.Zero
+            	         			           }
+            	         		}
+            	         };
 
             	// Handle extended keys:
                 // If the scan code is preceded by a prefix byte that has the value 0xE0 (224),

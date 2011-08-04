@@ -82,6 +82,7 @@
     <Compile Include="MouseKeyboardHardwareInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VirtualKeyCode.cs" />
+    <Compile Include="VirtualKeyMapTypes.cs" />
     <Compile Include="XButton.cs" />
   </ItemGroup>
   <ItemGroup>
